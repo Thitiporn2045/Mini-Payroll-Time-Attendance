@@ -38,7 +38,20 @@
         ),
         data: { turbo_frame: "employee_form_panel" },
         class: "btn-secondary px-3 py-2 text-xs" %>
-        <span class="btn-danger px-3 py-2 text-xs opacity-60">ลบ</span>
+        <%= button_to "ลบ",
+            employee_path(
+                employee,
+                return_to: "employees",
+                employee_query: local_assigns[:employee_query],
+                position: local_assigns[:position_filter]
+            ),
+            method: :delete,
+            form: {
+                data: {
+                turbo_confirm: "ยืนยันการลบพนักงานคนนี้?"
+                }
+            },
+            class: "btn-danger px-3 py-2 text-xs" %>
         </div>
     </td>
 </tr>

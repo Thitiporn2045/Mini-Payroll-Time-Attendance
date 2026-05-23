@@ -1,0 +1,11 @@
+<%= turbo_stream.update "employees_list" do %>
+    <%= render "employees/employees_table",
+        employees: @employees,
+        employee_query: @employee_query,
+        position_filter: @position_filter,
+        positions: @positions %>
+    <% end %>
+
+    <%= turbo_stream.update "flash" do %>
+    <%= render "shared/flash", notice: "ลบข้อมูลพนักงานเรียบร้อยแล้ว" %>
+<% end %>

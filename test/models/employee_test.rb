@@ -47,4 +47,12 @@ class EmployeeTest < ActiveSupport::TestCase
 
     assert_not employee.valid?
   end
+
+  test "can be destroyed without attendance association" do
+    employee = employees(:gift)
+
+    assert_difference("Employee.count", -1) do
+      employee.destroy
+    end
+  end
 end

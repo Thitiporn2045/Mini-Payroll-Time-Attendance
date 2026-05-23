@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
   root "employees#index"
 
-  resources :employees, only: [:index, :new, :create, :edit, :update]
+  resources :employees, only: [:index, :new, :create, :edit, :update, :destroy]
 end

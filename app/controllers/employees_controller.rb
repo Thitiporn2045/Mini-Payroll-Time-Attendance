@@ -1,5 +1,5 @@
 class EmployeesController < ApplicationController
-  before_action :set_employee, only: [:edit, :update]
+  before_action :set_employee, only: [:edit, :update, :destroy]
   before_action :set_positions, only: [:new, :create, :edit, :update]
 
   def index
@@ -76,6 +76,22 @@ class EmployeesController < ApplicationController
     copy_position_errors(error.record)
 
     render :edit, status: :unprocessable_entity
+  end
+
+  def destroy
+    @employee.destroy
+    load_index_data if params[:return_to] == "employees"
+
+    respond_to do |format|
+      format.html do
+        redirect_to employees_path(
+          employee_query: params[:employee_query],
+          position: params[:position]
+        ), notice: "ลบข้อมูลพนักงานเรียบร้อยแล้ว"
+      end
+
+      format.turbo_stream
+    end
   end
 
   private
