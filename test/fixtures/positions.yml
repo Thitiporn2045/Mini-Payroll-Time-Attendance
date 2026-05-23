@@ -9,3 +9,7 @@ designer:
 hr:
     name: HR Officer
     normalized_name: hr officer
+
+qa:
+    name: QA Engineer
+    normalized_name: qa engineer

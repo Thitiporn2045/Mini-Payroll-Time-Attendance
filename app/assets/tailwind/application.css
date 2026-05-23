@@ -62,6 +62,10 @@
         @apply flex cursor-pointer items-center gap-3 rounded-[1.35rem] bg-slate-900/80 px-4 py-4 text-base font-semibold text-white/90 transition hover:bg-slate-900;
     }
 
+    .workspace-nav-icon {
+        @apply h-5 w-5 shrink-0;
+    }
+
     .page-header {
         @apply mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between;
     }
@@ -226,12 +230,28 @@
         @apply opacity-100;
     }
 
+    .dialog-backdrop {
+        @apply fixed inset-0 z-[70] bg-slate-950/35 opacity-0 transition-opacity duration-200;
+    }
+
+    .dialog-backdrop.is-open {
+        @apply opacity-100;
+    }
+
     .modal-panel {
         @apply fixed right-0 top-0 z-50 h-full w-full overflow-y-auto border-l border-slate-200 bg-white opacity-0 translate-x-6 transition duration-300;
     }
 
     .modal-panel.is-open {
         @apply translate-x-0 opacity-100;
+    }
+
+    .dialog-panel {
+        @apply absolute left-1/2 top-1/2 z-[80] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-[46%] rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-slate-900/10 opacity-0 transition duration-200;
+    }
+
+    .dialog-panel.is-open {
+        @apply -translate-y-1/2 opacity-100;
     }
 
     .modal-header {
@@ -280,6 +300,18 @@
 
     .combobox-option-active {
         @apply bg-pink-50 text-pink-700;
+    }
+
+    .dialog-icon-shell {
+        @apply mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600;
+    }
+
+    .dialog-title {
+        @apply text-center text-2xl font-bold tracking-tight text-slate-950;
+    }
+
+    .dialog-description {
+        @apply mt-3 text-center text-sm leading-6 text-slate-500;
     }
 
     .combobox-empty {

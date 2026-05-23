@@ -1,0 +1,14 @@
+<% positions.each do |position| %>
+  <button
+    type="button"
+    class="combobox-option"
+    data-position-combobox-target="option"
+    data-position-value="<%= position.name %>"
+    data-action="click->position-combobox#select">
+    <%= position.name %>
+  </button>
+<% end %>
+
+<p class="combobox-empty" hidden data-position-combobox-target="empty">
+  คุณสามารถใช้ข้อความที่พิมพ์อยู่เพื่อสร้างตำแหน่งใหม่ได้
+</p>

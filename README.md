@@ -62,7 +62,7 @@ Tax แบบขั้นบันได:
 
 ## สิ่งที่ทำเพิ่มจาก Requirement
 
-- Turbo-powered filtering และ partial update
+- มีสถานะมาทำงาน, ลา และ ขาด ให้เลือก
 - หน้า workspace สำหรับจัดการ attendance ของพนักงานทุกคน
 - การ normalize ชื่อตำแหน่งเพื่อป้องกัน duplicate แบบต่างตัวพิมพ์/มีช่องว่าง
 - test coverage ฝั่ง model, controller, service
@@ -182,6 +182,7 @@ AI ถูกใช้ช่วยในส่วนต่อไปนี้:
 - ช่วยเพิ่มและปรับ test coverage
 - review flow ของ controller / model / service
 - ช่วยเรียบเรียง README และเอกสารประกอบโปรเจกต์
+- ช่วย debug flow ของ panel validation, ปรับ regression test
 
 ## Known Limitations
 

@@ -1,9 +1,10 @@
 <%= turbo_frame_tag "employee_form_panel" do %>
-    <% return_path = employees_path(employee_query: params[:employee_query], position: params[:position]) %>
+    <% return_path = employee_form_return_path %>
 
     <div
         class="modal-backdrop"
         data-controller="side-panel"
+        data-side-panel-open-value="<%= @employee.errors.any? %>"
         data-side-panel-close-url-value="<%= return_path %>"
         data-action="click->side-panel#backdropClicked">
         <div class="modal-panel max-w-md" data-side-panel-target="panel">
@@ -26,6 +27,7 @@
         <div class="px-6 py-5">
             <%= render "form", employee: @employee, positions: @positions %>
         </div>
+
         </div>
     </div>
 <% end %>

@@ -35,10 +35,10 @@ class PositionTest < ActiveSupport::TestCase
 
   test "find_or_create_by_name creates a new position when missing" do
     assert_difference("Position.count", 1) do
-      position = Position.find_or_create_by_name!("QA Engineer")
+      position = Position.find_or_create_by_name!("Data Analyst")
 
-      assert_equal "QA Engineer", position.name
-      assert_equal "qa engineer", position.normalized_name
+      assert_equal "Data Analyst", position.name
+      assert_equal "data analyst", position.normalized_name
     end
   end
 
@@ -74,5 +74,13 @@ class PositionTest < ActiveSupport::TestCase
     end
 
     assert_includes position.errors[:base], I18n.t("errors.messages.restrict_dependent_destroy.has_many")
+  end
+
+  test "can destroy a position that is not referenced by employees" do
+    position = positions(:qa)
+
+    assert_difference("Position.count", -1) do
+      position.destroy!
+    end
   end
 end

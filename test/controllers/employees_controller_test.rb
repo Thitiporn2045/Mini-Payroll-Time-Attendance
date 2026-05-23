@@ -6,6 +6,8 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "พนักงาน"
+    assert_select ".workspace-nav svg.workspace-nav-icon", minimum: 2
+    assert_select ".workspace-nav", text: /⌂/, count: 0
   end
 
   test "filters employees by name and position" do
@@ -67,6 +69,125 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     assert_select "select[onchange*='status']"
   end
 
+  test "opens delete confirmation modal from employees list context" do
+    employee = employees(:somchai)
+
+    get confirm_destroy_employee_path(employee), params: {
+      return_to: "employees",
+      employee_query: "Som",
+      position: positions(:developer).name
+    }, headers: { "Turbo-Frame" => "employee_delete_panel" }
+
+    assert_response :success
+    assert_select "turbo-frame#employee_delete_panel"
+    assert_select ".dialog-backdrop"
+    assert_select "h2", "ลบพนักงานคนนี้?"
+    assert_select "form[action='#{employee_path(employee, return_to: "employees", employee_query: "Som", position: positions(:developer).name)}']"
+  end
+
+  test "opens delete confirmation modal from employee detail context" do
+    employee = employees(:somchai)
+
+    get confirm_destroy_employee_path(employee), params: {
+      return_to: "employee_show",
+      month: "2026-05",
+      status: "present"
+    }, headers: { "Turbo-Frame" => "employee_delete_panel" }
+
+    assert_response :success
+    assert_select "turbo-frame#employee_delete_panel"
+    assert_select ".dialog-backdrop"
+    assert_select "h2", "ลบพนักงานคนนี้?"
+    assert_select "form[data-turbo-frame='_top']"
+  end
+
+  test "new employee form shows delete icons only for removable positions" do
+    get new_employee_path
+
+    assert_response :success
+    assert_select ".combobox-panel"
+    assert_select "a[href*='/positions/']", count: 0
+  end
+
+  test "keeps employee form panel open when create validation fails" do
+    assert_no_difference("Employee.count") do
+      post employees_path, params: {
+        employee: {
+          name: "",
+          salary: 60_000,
+          position_name: "Data Analyst"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "turbo-frame#employee_form_panel [data-controller='side-panel'][data-side-panel-open-value='true']"
+    assert_select "turbo-frame#employee_form_panel .error-box"
+  end
+
+  test "edit employee form from detail context preserves close path to show page" do
+    employee = employees(:somchai)
+
+    get edit_employee_path(employee), params: {
+      return_to: "employee",
+      month: "2026-05",
+      status: "present"
+    }, headers: { "Turbo-Frame" => "employee_form_panel" }
+
+    assert_response :success
+    expected_path = employee_path(employee, month: "2026-05", status: "present")
+    assert_select "[data-side-panel-close-url-value='#{expected_path}']"
+    assert_select "a[href='#{expected_path}'].icon-button"
+    assert_select "a[href='#{expected_path}']", text: "ยกเลิก"
+  end
+
+  test "edit employee form from list context preserves close path to employees index" do
+    employee = employees(:somchai)
+
+    get edit_employee_path(employee), params: {
+      return_to: "employees",
+      employee_query: "Som",
+      position: positions(:developer).name
+    }, headers: { "Turbo-Frame" => "employee_form_panel" }
+
+    assert_response :success
+    expected_path = employees_path(employee_query: "Som", position: positions(:developer).name)
+    assert_select "[data-side-panel-close-url-value='#{expected_path}']"
+    assert_select "a[href='#{expected_path}'].icon-button"
+    assert_select "a[href='#{expected_path}']", text: "ยกเลิก"
+  end
+
+  test "keeps employee form panel open when update validation fails" do
+    employee = employees(:somchai)
+
+    patch employee_path(employee), params: {
+      employee: {
+        name: "",
+        salary: 75_000,
+        position_name: "Product Designer"
+      },
+      return_to: "employee",
+      month: "2026-05",
+      status: "present"
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "turbo-frame#employee_form_panel [data-controller='side-panel'][data-side-panel-open-value='true']"
+    assert_select "turbo-frame#employee_form_panel .error-box"
+  end
+
+  test "new employee form from list context preserves close path to employees index" do
+    get new_employee_path,
+        params: { return_to: "employees", employee_query: "Som", position: positions(:developer).name },
+        headers: { "Turbo-Frame" => "employee_form_panel" }
+
+    assert_response :success
+    expected_path = employees_path(employee_query: "Som", position: positions(:developer).name)
+    assert_select "[data-side-panel-close-url-value='#{expected_path}']"
+    assert_select "a[href='#{expected_path}'].icon-button"
+    assert_select "a[href='#{expected_path}']", text: "ยกเลิก"
+  end
+
   test "creates employee with a new position from position_name" do
     assert_difference("Employee.count", 1) do
       assert_difference("Position.count", 1) do
@@ -74,7 +195,7 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
           employee: {
             name: "Jane Doe",
             salary: 60_000,
-            position_name: "QA Engineer"
+            position_name: "Data Analyst"
           }
         }
       end
@@ -83,8 +204,8 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     employee = Employee.order(:id).last
 
     assert_redirected_to employee_path(employee)
-    assert_equal "QA Engineer", employee.position.name
-    assert_equal "qa engineer", employee.position.normalized_name
+    assert_equal "Data Analyst", employee.position.name
+    assert_equal "data analyst", employee.position.normalized_name
   end
 
   test "creates employee from index context and redirects back to employees list" do

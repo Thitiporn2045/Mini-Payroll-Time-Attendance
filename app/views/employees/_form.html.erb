@@ -1,5 +1,5 @@
 <%= form_with model: employee, class: "space-y-5" do |form| %>
-    <% return_path = employees_path(employee_query: params[:employee_query], position: params[:position]) %>
+    <% return_path = employee_form_return_path(employee) %>
 
     <% if params[:return_to].present? %>
         <%= hidden_field_tag :return_to, params[:return_to] %>
@@ -32,42 +32,27 @@
         <%= form.label :position_name, "ตำแหน่ง", class: "label-text" %>
 
         <div class="combobox" data-controller="position-combobox">
-        <%= form.text_field :position_name,
-            value: employee.position_name.presence || employee.position&.name,
-            class: "input-field pr-12",
-            autocomplete: "off",
-            placeholder: "เลือกหรือพิมพ์ตำแหน่งใหม่ เช่น นักพัฒนา",
-            data: {
-            position_combobox_target: "input",
-            action: "focus->position-combobox#open input->position-combobox#filter keydown->position-combobox#handleKeydown"
-            } %>
+            <%= form.text_field :position_name,
+                value: employee.position_name.presence || employee.position&.name,
+                class: "input-field pr-12",
+                autocomplete: "off",
+                placeholder: "เลือกหรือพิมพ์ตำแหน่งใหม่ เช่น นักพัฒนา",
+                data: {
+                position_combobox_target: "input",
+                action: "focus->position-combobox#open input->position-combobox#filter keydown->position-combobox#handleKeydown"
+                } %>
 
-        <button
-            type="button"
-            class="absolute inset-y-0 right-0 inline-flex w-12 cursor-pointer items-center justify-center text-slate-500"
-            aria-label="เปิดรายการตำแหน่ง"
-            aria-expanded="false"
-            data-position-combobox-target="button"
-            data-action="click->position-combobox#toggle">
-            ▼
-        </button>
-
-        <div class="combobox-panel" hidden data-position-combobox-target="panel">
-            <% positions.each do |position| %>
             <button
                 type="button"
-                class="combobox-option"
-                data-position-combobox-target="option"
-                data-position-value="<%= position.name %>"
-                data-action="click->position-combobox#select">
-                <%= position.name %>
+                class="absolute inset-y-0 right-0 inline-flex w-12 cursor-pointer items-center justify-center text-slate-500"
+                aria-label="เปิดรายการตำแหน่ง"
+                aria-expanded="false"
+                data-position-combobox-target="button"
+                data-action="click->position-combobox#toggle">
+                ▼
             </button>
-            <% end %>
 
-            <p class="combobox-empty" hidden data-position-combobox-target="empty">
-            คุณสามารถใช้ข้อความที่พิมพ์อยู่เพื่อสร้างตำแหน่งใหม่ได้
-            </p>
-        </div>
+            <%= render "position_options_frame", positions: positions %>
         </div>
     </div>
 

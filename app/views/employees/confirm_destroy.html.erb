@@ -1,0 +1,52 @@
+<%= turbo_frame_tag "employee_delete_panel" do %>
+  <% submit_top_frame = params[:return_to] == "employee_show" %>
+
+  <div
+    class="dialog-backdrop"
+    data-controller="modal-dialog"
+    data-action="click->modal-dialog#backdropClicked">
+    <div class="dialog-panel p-8 sm:p-10" data-modal-dialog-target="panel">
+      <div class="dialog-icon-shell">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="h-9 w-9">
+          <path d="M9 3.75h6M4.5 6.75h15M8.25 6.75V5.625A1.875 1.875 0 0 1 10.125 3.75h3.75A1.875 1.875 0 0 1 15.75 5.625V6.75m-8.25 0v10.125A2.625 2.625 0 0 0 10.125 19.5h3.75A2.625 2.625 0 0 0 16.5 16.875V6.75M10.5 10.5v5.25m3-5.25v5.25" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+        </svg>
+      </div>
+
+      <div class="mt-6">
+        <h2 class="dialog-title">ลบพนักงานคนนี้?</h2>
+        <p class="dialog-description">
+          หากยืนยัน ระบบจะลบข้อมูลพนักงานและข้อมูลเวลาเข้าออกงานทั้งหมดของ
+          <span class="font-semibold text-slate-700"><%= @employee.name %></span>
+          แบบถาวร
+        </p>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-900">
+        <p class="font-semibold"><%= @employee.name %></p>
+        <p class="mt-1 text-red-700/90">ตำแหน่ง <%= @employee.position.name %></p>
+      </div>
+
+      <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+        <button
+          type="button"
+          class="btn-secondary"
+          data-action="click->modal-dialog#close">
+          ยกเลิก
+        </button>
+
+        <%= button_to "ลบพนักงาน",
+            employee_path(
+              @employee,
+              return_to: params[:return_to],
+              employee_query: params[:employee_query],
+              position: params[:position],
+              month: params[:month],
+              status: params[:status]
+            ),
+            method: :delete,
+            form: submit_top_frame ? { data: { turbo_frame: "_top" } } : {},
+            class: "btn-danger" %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -9,3 +9,5 @@
     <%= turbo_stream.update "flash" do %>
     <%= render "shared/flash", notice: "ลบข้อมูลพนักงานเรียบร้อยแล้ว" %>
 <% end %>
+
+<%= turbo_stream.update "employee_delete_panel", "" %>

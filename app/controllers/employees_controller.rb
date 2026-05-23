@@ -1,10 +1,10 @@
 class EmployeesController < ApplicationController
-  before_action :set_employee, only: [:show, :edit, :update, :destroy]
-  before_action :set_positions, only: [:new, :create, :edit, :update]
+  before_action :set_employee, only: [ :show, :edit, :update, :destroy, :confirm_destroy ]
+  before_action :set_positions, only: [ :new, :create, :edit, :update ]
 
   def index
     load_index_data
-    return render partial: "employees/employees_results", locals: {
+    render partial: "employees/employees_results", locals: {
       employees: @employees,
       employee_query: @employee_query,
       position_filter: @position_filter
@@ -13,7 +13,7 @@ class EmployeesController < ApplicationController
 
   def show
     prepare_show_data
-    return render partial: "employees/attendance_table_frame", locals: {
+    render partial: "employees/attendance_table_frame", locals: {
       employee: @employee,
       attendances: @attendances,
       selected_month_value: @selected_month_value,
@@ -53,6 +53,9 @@ class EmployeesController < ApplicationController
   end
 
   def edit
+  end
+
+  def confirm_destroy
   end
 
   def update

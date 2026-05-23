@@ -41,19 +41,14 @@
         ),
         data: { turbo_frame: "employee_form_panel" },
         class: "btn-secondary px-3 py-2 text-xs" %>
-        <%= button_to "ลบ",
-            employee_path(
+        <%= link_to "ลบ",
+            confirm_destroy_employee_path(
                 employee,
                 return_to: "employees",
                 employee_query: local_assigns[:employee_query],
                 position: local_assigns[:position_filter]
             ),
-            method: :delete,
-            form: {
-                data: {
-                turbo_confirm: "ยืนยันการลบพนักงานคนนี้?"
-                }
-            },
+            data: { turbo_frame: "employee_delete_panel" },
             class: "btn-danger px-3 py-2 text-xs" %>
         </div>
     </td>
