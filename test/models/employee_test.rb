@@ -16,7 +16,7 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.name = ""
 
     assert_not employee.valid?
-    assert_includes employee.errors[:name], "can't be blank"
+    assert_includes employee.errors[:name], I18n.t("errors.messages.blank")
   end
 
   test "is invalid without salary" do
@@ -24,7 +24,7 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.salary = nil
 
     assert_not employee.valid?
-    assert_includes employee.errors[:salary], "can't be blank"
+    assert_includes employee.errors[:salary], I18n.t("errors.messages.blank")
   end
 
   test "is invalid with zero salary" do

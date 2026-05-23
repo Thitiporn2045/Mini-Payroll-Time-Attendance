@@ -1,0 +1,40 @@
+th:
+  activerecord:
+    models:
+      employee: "พนักงาน"
+      position: "ตำแหน่ง"
+
+    attributes:
+      employee:
+        name: "ชื่อ-นามสกุล"
+        salary: "เงินเดือน"
+        position: "ตำแหน่ง"
+        position_name: "ตำแหน่ง"
+
+      position:
+        name: "ชื่อตำแหน่ง"
+        normalized_name: "ชื่อตำแหน่ง"
+
+    errors:
+      models:
+        employee:
+          attributes:
+            position:
+              required: "ต้องระบุ"
+        position:
+          attributes:
+            name:
+              blank: "ต้องระบุ"
+            normalized_name:
+              taken: "มีอยู่แล้ว"
+
+  errors:
+    format: "%{attribute} %{message}"
+
+    messages:
+      blank: "ต้องระบุ"
+      required: "ต้องระบุ"
+      taken: "มีอยู่แล้ว"
+      not_a_number: "ต้องเป็นตัวเลข"
+      greater_than: "ต้องมากกว่า %{count}"
+      greater_than_or_equal_to: "ต้องมากกว่าหรือเท่ากับ %{count}"
