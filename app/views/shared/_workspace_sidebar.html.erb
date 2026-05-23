@@ -16,10 +16,11 @@
             <span>พนักงาน</span>
         <% end %>
 
-        <span class="workspace-nav-item-inactive opacity-60">
+        <%= link_to attendances_path,
+            class: active == :attendances ? "workspace-nav-item-active" : "workspace-nav-item-inactive" do %>
             <span class="text-xl">✓</span>
             <span>Attendance</span>
-        </span>
+        <% end %>
         </div>
     </div>
 </aside>

@@ -1,6 +1,29 @@
 class AttendancesController < ApplicationController
-  before_action :set_employee
-  before_action :set_attendance, only: [:edit, :update]
+  before_action :set_employee, only: [ :new, :create, :edit, :update ]
+  before_action :set_attendance, only: [ :edit, :update ]
+
+  def index
+    @selected_month = resolve_selected_month
+    @selected_month_value = @selected_month.strftime("%Y-%m")
+    @status_filter = params[:status].to_s
+    @employee_filter = params[:employee_id].to_s
+
+    @employees = Employee.order(:name)
+
+    scope = Attendance.includes(employee: :position)
+      .where(work_date: @selected_month.all_month)
+      .order(work_date: :desc, id: :desc)
+
+    if @status_filter.present? && Attendance.statuses.key?(@status_filter)
+      scope = scope.public_send("status_#{@status_filter}")
+    end
+
+    if @employee_filter.present?
+      scope = scope.where(employee_id: @employee_filter)
+    end
+
+    @attendances = scope
+  end
 
   def new
     @attendance = @employee.attendances.new(

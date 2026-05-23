@@ -423,5 +423,9 @@
 
     .segmented-option-inactive {
         @apply text-slate-500 hover:bg-white/70 hover:text-slate-800;
-}
+    }
+
+    .attendance-filter-grid {
+        @apply lg:grid-cols-[190px_minmax(220px,1fr)_190px_auto];
+    }
 }
