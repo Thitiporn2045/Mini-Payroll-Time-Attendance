@@ -1,0 +1,34 @@
+<div class="page-shell">
+  <div id="flash">
+    <%= render "shared/flash" %>
+  </div>
+
+  <div class="workspace-shell">
+    <%= render "shared/workspace_sidebar", active: :employees %>
+
+    <div class="workspace-content-index">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">พนักงาน</h1>
+          <p class="page-subtitle">
+            จัดการข้อมูลพนักงาน เงินเดือน และดูสรุปรายได้รายบุคคล
+          </p>
+        </div>
+
+        <span class="btn-primary opacity-60">
+          เพิ่มพนักงาน
+        </span>
+      </div>
+
+      <div id="employees_list" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <%= render "employees_table",
+          employees: @employees,
+          employee_query: @employee_query,
+          position_filter: @position_filter,
+          positions: @positions %>
+      </div>
+    </div>
+  </div>
+
+  <%= turbo_frame_tag "employee_form_panel" %>
+</div>

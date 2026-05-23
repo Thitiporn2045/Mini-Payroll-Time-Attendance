@@ -1,0 +1,36 @@
+<tr id="<%= dom_id(employee) %>" class="table-row">
+    <td class="table-cell">
+        <% initials = employee.name.to_s.strip.first.presence || "?" %>
+
+        <div class="flex items-center gap-4">
+        <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-bold text-white">
+            <%= initials %>
+        </div>
+
+        <div>
+            <div class="font-semibold text-slate-900"><%= employee.name %></div>
+            <div class="mt-1 text-xs text-slate-400">
+            รหัส EMP-<%= employee.id.to_s.rjust(3, "0") %>
+            </div>
+        </div>
+        </div>
+    </td>
+
+    <td class="table-cell">
+        <span class="chip-blue">
+        <%= employee.position.name %>
+        </span>
+    </td>
+
+    <td class="table-cell font-mono font-semibold text-slate-900">
+        <%= number_to_currency(employee.salary, unit: "฿", precision: 2) %>
+    </td>
+
+    <td class="table-cell-sticky-right">
+        <div class="flex justify-end gap-2">
+        <span class="btn-secondary px-3 py-2 text-xs opacity-60">ดูข้อมูล</span>
+        <span class="btn-secondary px-3 py-2 text-xs opacity-60">แก้ไขข้อมูล</span>
+        <span class="btn-danger px-3 py-2 text-xs opacity-60">ลบ</span>
+        </div>
+    </td>
+</tr>

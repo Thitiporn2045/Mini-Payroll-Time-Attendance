@@ -1,1 +1,220 @@
 @import "tailwindcss";
+@theme {
+    --font-sans:
+        "IBM Plex Sans Thai", "IBM Plex Sans", ui-sans-serif, system-ui,
+        sans-serif;
+}
+
+@layer base {
+    html {
+        font-family: var(--font-sans);
+    }
+
+    body {
+        min-height: 100vh;
+        background-color: #f8fafc;
+        color: #0f172a;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+        background-color: #fbcfe8;
+        color: #0f172a;
+    }
+}
+
+@layer components {
+    .app-body {
+        @apply bg-slate-50;
+    }
+
+    .app-shell {
+        @apply min-h-screen w-full;
+    }
+
+    .page-shell {
+        @apply w-full;
+    }
+
+    .workspace-shell {
+        @apply grid min-h-screen gap-0 xl:grid-cols-[260px_minmax(0,1fr)];
+    }
+
+    .workspace-sidebar {
+        @apply h-full bg-slate-950 px-6 py-8 text-white xl:min-h-screen;
+    }
+
+    .workspace-content-index {
+        @apply flex h-screen min-h-0 max-h-screen flex-col overflow-hidden px-6 py-8 xl:px-12 xl:py-10;
+    }
+
+    .workspace-nav {
+        @apply mt-6 space-y-3;
+    }
+
+    .workspace-nav-item-active {
+        @apply flex cursor-pointer items-center gap-3 rounded-[1.35rem] bg-white px-4 py-4 text-base font-semibold text-slate-950 transition;
+    }
+
+    .workspace-nav-item-inactive {
+        @apply flex cursor-pointer items-center gap-3 rounded-[1.35rem] bg-slate-900/80 px-4 py-4 text-base font-semibold text-white/90 transition hover:bg-slate-900;
+    }
+
+    .page-header {
+        @apply mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between;
+    }
+
+    .page-title {
+        @apply text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl;
+    }
+
+    .page-subtitle {
+        @apply mt-2 max-w-3xl text-sm leading-6 text-slate-500;
+    }
+
+    .btn-primary {
+        @apply inline-flex cursor-pointer items-center justify-center rounded-xl bg-pink-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700;
+    }
+
+    .btn-secondary {
+        @apply inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
+    }
+
+    .btn-danger {
+        @apply inline-flex cursor-pointer items-center justify-center rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-100;
+    }
+
+    .chip-blue {
+        @apply inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700;
+    }
+
+    .filter-toolbar {
+        @apply border-b border-slate-200 bg-slate-50 px-5 py-4 sm:px-6;
+    }
+
+    .filter-grid {
+        @apply grid gap-3 lg:grid-cols-[minmax(0,1fr)_200px_auto];
+    }
+
+    .filter-field {
+        @apply flex min-h-[2.875rem] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3;
+    }
+
+    .filter-input {
+        @apply h-10 w-full border-0 bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:font-medium placeholder:text-slate-300;
+    }
+
+    .filter-select {
+        @apply h-10 w-full cursor-pointer appearance-none border-0 bg-transparent pr-6 text-sm font-semibold text-slate-700 outline-none;
+    }
+
+    .filter-clear {
+        @apply inline-flex min-h-[2.875rem] cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50;
+    }
+
+    .dropdown-filter-icon {
+        @apply shrink-0 text-sm text-slate-500;
+    }
+
+    .table-card {
+        @apply overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white;
+    }
+
+    .table-card-fill {
+        @apply flex h-full min-h-0 max-h-full flex-1 flex-col;
+    }
+
+    .table-head {
+        @apply bg-slate-50 text-xs uppercase tracking-wide text-slate-500;
+    }
+
+    .table-scroll {
+        @apply min-h-0 max-h-full flex-1 overflow-auto;
+    }
+
+    .table-head-cell {
+        @apply sticky top-0 z-10 bg-slate-50 px-6 py-4;
+    }
+
+    .table-head-cell-sticky-right {
+        @apply sticky top-0 right-0 z-20 bg-slate-50 px-6 py-4 text-right shadow-[-1px_0_0_0] shadow-slate-200;
+    }
+
+    .table-cell {
+        @apply px-6 py-4 text-sm text-slate-700;
+    }
+
+    .table-cell-sticky-right {
+        @apply sticky right-0 z-[5] bg-white px-6 py-4 text-right text-sm text-slate-700 shadow-[-1px_0_0_0] shadow-slate-100 transition;
+    }
+
+    .table-row {
+        @apply transition;
+    }
+
+    .table-body-striped .table-row:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .table-body-striped .table-row:nth-child(even) {
+        background-color: #f8fafc;
+    }
+
+    .table-body-striped .table-row:hover {
+        background-color: #eef2ff;
+    }
+
+    .table-body-striped .table-row:nth-child(odd) .table-cell-sticky-right {
+        background-color: #ffffff;
+    }
+
+    .table-body-striped .table-row:nth-child(even) .table-cell-sticky-right {
+        background-color: #f8fafc;
+    }
+
+    .table-body-striped .table-row:hover .table-cell-sticky-right {
+        background-color: #eef2ff;
+    }
+
+    .empty-state {
+        @apply flex min-h-72 flex-col items-center justify-center px-6 py-12 text-center;
+    }
+
+    .empty-title {
+        @apply text-sm font-semibold text-slate-700;
+    }
+
+    .empty-description {
+        @apply mt-2 max-w-md text-sm leading-6 text-slate-400;
+    }
+
+    .toast-stack {
+        @apply pointer-events-none fixed right-6 top-6 z-[80] flex w-full max-w-sm flex-col gap-3;
+    }
+
+    .toast {
+        @apply pointer-events-auto flex items-start gap-3 rounded-2xl border bg-white p-4 shadow-lg shadow-slate-200/70 opacity-0 translate-y-2 transition duration-200;
+    }
+
+    .toast-open {
+        @apply translate-y-0 opacity-100;
+    }
+
+    .toast-success {
+        @apply border-green-200 bg-green-50 text-green-800;
+    }
+
+    .toast-neutral {
+        @apply border-slate-200 bg-white text-slate-700;
+    }
+
+    .toast-alert {
+        @apply border-red-200 bg-red-50 text-red-700;
+    }
+
+    .toast-close {
+        @apply ml-auto inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-current/15 text-base leading-none text-current transition hover:bg-white/60;
+    }
+}

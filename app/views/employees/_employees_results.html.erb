@@ -1,0 +1,33 @@
+<%= turbo_frame_tag "employees_results", class: "table-scroll" do %>
+    <table class="w-full min-w-[720px] text-left text-sm">
+        <thead class="table-head">
+        <tr>
+            <th class="table-head-cell">ชื่อพนักงาน</th>
+            <th class="table-head-cell">ตำแหน่ง</th>
+            <th class="table-head-cell">เงินเดือน</th>
+            <th class="table-head-cell-sticky-right"></th>
+        </tr>
+        </thead>
+
+        <tbody id="employees" class="table-body-striped">
+        <% if employees.any? %>
+            <%= render partial: "employees/employee",
+            collection: employees,
+            as: :employee,
+            locals: {
+                employee_query: local_assigns[:employee_query],
+                position_filter: local_assigns[:position_filter]
+            } %>
+        <% else %>
+            <tr id="employees_empty_state">
+            <td colspan="4">
+                <div class="empty-state">
+                <p class="empty-title">ยังไม่มีพนักงาน</p>
+                <p class="empty-description">เริ่มจากการเพิ่มพนักงานคนแรกเพื่อสร้างข้อมูลเงินเดือนและ attendance</p>
+                </div>
+            </td>
+            </tr>
+        <% end %>
+        </tbody>
+    </table>
+<% end %>

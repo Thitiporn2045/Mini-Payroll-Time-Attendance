@@ -1,0 +1,36 @@
+<section class="table-card table-card-fill">
+    <%= form_with url: employees_path,
+        method: :get,
+        class: "filter-toolbar",
+        data: { controller: "filter-form", turbo_frame: "employees_results" } do %>
+        <div class="filter-grid">
+        <div class="filter-field">
+            <span class="mr-1 text-slate-300">⌕</span>
+            <%= text_field_tag :employee_query,
+            local_assigns[:employee_query],
+            placeholder: "ค้นหาชื่อพนักงาน...",
+            autocomplete: "off",
+            class: "filter-input",
+            data: { action: "input->filter-form#submitDebounced" } %>
+        </div>
+
+        <div class="filter-field">
+            <%= select_tag :position,
+            options_for_select([["ทุกตำแหน่ง", ""]] + local_assigns.fetch(:positions, []).map { |position| [position.name, position.name] }, local_assigns[:position_filter]),
+            class: "filter-select",
+            data: { action: "change->filter-form#submitNow" } %>
+            <span class="dropdown-filter-icon">▼</span>
+        </div>
+
+        <%= link_to "ล้างค่า",
+            employees_path,
+            data: { turbo_frame: "_top" },
+            class: "filter-clear" %>
+        </div>
+    <% end %>
+
+    <%= render "employees/employees_results",
+        employees: employees,
+        employee_query: local_assigns[:employee_query],
+        position_filter: local_assigns[:position_filter] %>
+</section>

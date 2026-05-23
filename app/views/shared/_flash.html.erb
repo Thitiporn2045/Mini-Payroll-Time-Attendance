@@ -1,0 +1,27 @@
+<% local_notice = local_assigns[:notice] %>
+
+<% messages = [] %>
+<% messages << ["success", local_notice] if local_notice.present? %>
+
+<% flash.each do |type, message| %>
+    <% next if type.to_s == "notice" && local_notice.present? %>
+    <% tone = type.to_s == "alert" ? "alert" : (type.to_s == "notice" ? "success" : "neutral") %>
+    <% messages << [tone, message] %>
+    <% end %>
+
+    <% if messages.any? %>
+    <div class="toast-stack">
+        <% messages.each do |tone, message| %>
+        <% tone_class = case tone
+            when "success" then "toast-success"
+            when "alert" then "toast-alert"
+            else "toast-neutral"
+        end %>
+
+        <div data-controller="toast" class="toast <%= tone_class %>">
+            <p class="pr-2 text-sm font-semibold leading-6"><%= message %></p>
+            <button type="button" class="toast-close" data-action="click->toast#close" aria-label="ปิดการแจ้งเตือน">×</button>
+        </div>
+        <% end %>
+    </div>
+<% end %>
