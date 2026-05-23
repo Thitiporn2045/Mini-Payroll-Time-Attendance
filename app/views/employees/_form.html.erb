@@ -1,0 +1,58 @@
+<%= form_with model: employee, class: "space-y-6" do |form| %>
+    <% if employee.errors.any? %>
+        <div class="form-error-box">
+        <p class="font-semibold">ไม่สามารถบันทึกข้อมูลได้</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <% employee.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+            <% end %>
+        </ul>
+        </div>
+    <% end %>
+
+    <div class="form-grid">
+        <div class="form-field">
+        <%= form.label :name, "ชื่อพนักงาน", class: "form-label" %>
+        <%= form.text_field :name,
+            class: "form-input",
+            placeholder: "เช่น Gift Thitiporn" %>
+        </div>
+
+        <div class="form-field">
+        <%= form.label :salary, "เงินเดือน", class: "form-label" %>
+        <%= form.number_field :salary,
+            class: "form-input",
+            placeholder: "เช่น 50000",
+            step: "0.01",
+            min: "0" %>
+        </div>
+
+        <div class="form-field">
+        <%= form.label :position_id, "เลือกตำแหน่งที่มีอยู่", class: "form-label" %>
+        <%= form.collection_select :position_id,
+            positions,
+            :id,
+            :name,
+            { prompt: "เลือกตำแหน่ง" },
+            class: "form-input" %>
+        <p class="form-help">
+            ถ้าตำแหน่งยังไม่มี สามารถกรอกช่องด้านล่างแทนได้
+        </p>
+        </div>
+
+        <div class="form-field">
+        <%= form.label :position_name, "เพิ่มตำแหน่งใหม่", class: "form-label" %>
+        <%= form.text_field :position_name,
+            class: "form-input",
+            placeholder: "เช่น QA Engineer" %>
+        <p class="form-help">
+            ถ้ากรอกช่องนี้ ระบบจะใช้ตำแหน่งใหม่นี้แทน dropdown
+        </p>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <%= link_to "ยกเลิก", employees_path, class: "btn-secondary" %>
+        <%= form.submit "บันทึกพนักงาน", class: "btn-primary" %>
+    </div>
+<% end %>

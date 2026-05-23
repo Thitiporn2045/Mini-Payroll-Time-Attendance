@@ -1,0 +1,26 @@
+<div class="page-shell">
+    <div id="flash">
+        <%= render "shared/flash" %>
+    </div>
+
+    <div class="workspace-shell">
+        <%= render "shared/workspace_sidebar", active: :employees %>
+
+        <div class="workspace-content-form">
+        <div class="page-header">
+            <div>
+            <h1 class="page-title">เพิ่มพนักงาน</h1>
+            <p class="page-subtitle">
+                กรอกข้อมูลพนักงาน เลือกตำแหน่งที่มีอยู่ หรือเพิ่มตำแหน่งใหม่ได้ทันที
+            </p>
+            </div>
+
+            <%= link_to "กลับไปหน้าพนักงาน", employees_path, class: "btn-secondary" %>
+        </div>
+
+        <div class="form-card">
+            <%= render "form", employee: @employee, positions: @positions %>
+        </div>
+        </div>
+    </div>
+</div>

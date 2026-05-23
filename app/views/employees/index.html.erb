@@ -15,9 +15,9 @@
           </p>
         </div>
 
-        <span class="btn-primary opacity-60">
-          เพิ่มพนักงาน
-        </span>
+        <%= link_to "เพิ่มพนักงาน",
+          new_employee_path,
+          class: "btn-primary" %>
       </div>
 
       <div id="employees_list" class="flex min-h-0 flex-1 flex-col overflow-hidden">
