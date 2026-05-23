@@ -3,6 +3,7 @@ th:
     models:
       employee: "พนักงาน"
       position: "ตำแหน่ง"
+      attendance: "เวลาเข้าออกงาน"
 
     attributes:
       employee:
@@ -14,6 +15,13 @@ th:
       position:
         name: "ชื่อตำแหน่ง"
         normalized_name: "ชื่อตำแหน่ง"
+
+      attendance:
+        employee: "พนักงาน"
+        work_date: "วันที่ทำงาน"
+        status: "สถานะ"
+        check_in: "เวลาเข้า"
+        check_out: "เวลาออก"
 
     errors:
       models:

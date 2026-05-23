@@ -8,6 +8,62 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     assert_select "h1", "พนักงาน"
   end
 
+  test "creates employee with a new position from position_name" do
+    assert_difference("Employee.count", 1) do
+      assert_difference("Position.count", 1) do
+        post employees_path, params: {
+          employee: {
+            name: "Jane Doe",
+            salary: 60_000,
+            position_name: "QA Engineer"
+          }
+        }
+      end
+    end
+
+    employee = Employee.order(:id).last
+
+    assert_redirected_to employees_path
+    assert_equal "QA Engineer", employee.position.name
+    assert_equal "qa engineer", employee.position.normalized_name
+  end
+
+  test "reuses existing position when position_name differs by case and spacing" do
+    assert_difference("Employee.count", 1) do
+      assert_no_difference("Position.count") do
+        post employees_path, params: {
+          employee: {
+            name: "Jane Doe",
+            salary: 60_000,
+            position_name: "  developer  "
+          }
+        }
+      end
+    end
+
+    employee = Employee.order(:id).last
+
+    assert_redirected_to employees_path
+    assert_equal positions(:developer), employee.position
+  end
+
+  test "renders unprocessable entity when position_name is blank" do
+    assert_no_difference("Employee.count") do
+      assert_no_difference("Position.count") do
+        post employees_path, params: {
+          employee: {
+            name: "Jane Doe",
+            salary: 60_000,
+            position_name: "   "
+          }
+        }
+      end
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".field_with_errors"
+  end
+
   test "destroys employee successfully" do
     employee = employees(:gift)
 

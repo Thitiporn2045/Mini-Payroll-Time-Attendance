@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_120002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "attendances", force: :cascade do |t|
+    t.datetime "check_in"
+    t.datetime "check_out"
+    t.datetime "created_at", null: false
+    t.bigint "employee_id", null: false
+    t.integer "status", null: false
+    t.datetime "updated_at", null: false
+    t.date "work_date", null: false
+    t.index ["employee_id", "work_date"], name: "index_attendances_on_employee_id_and_work_date", unique: true
+    t.index ["employee_id"], name: "index_attendances_on_employee_id"
+    t.check_constraint "check_in IS NULL OR check_out IS NULL OR check_out > check_in", name: "attendance_check_out_after_check_in"
+    t.check_constraint "check_in IS NULL OR date(check_in) = work_date", name: "attendance_check_in_same_work_date"
+    t.check_constraint "check_out IS NULL OR date(check_out) = work_date", name: "attendance_check_out_same_work_date"
+    t.check_constraint "status = ANY (ARRAY[0, 1, 2])", name: "attendance_status_check"
+  end
 
   create_table "employees", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -32,5 +48,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_120001) do
     t.index ["normalized_name"], name: "index_positions_on_normalized_name", unique: true
   end
 
+  add_foreign_key "attendances", "employees"
   add_foreign_key "employees", "positions"
 end

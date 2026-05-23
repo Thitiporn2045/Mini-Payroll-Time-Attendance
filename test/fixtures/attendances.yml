@@ -1,0 +1,20 @@
+gift_present:
+    employee: gift
+    work_date: 2026-05-01
+    status: 0
+    check_in: 2026-05-01 09:00:00
+    check_out: 2026-05-01 18:30:00
+
+gift_leave:
+    employee: gift
+    work_date: 2026-05-02
+    status: 1
+    check_in:
+    check_out:
+
+mild_absent:
+    employee: mild
+    work_date: 2026-05-01
+    status: 2
+    check_in:
+    check_out:
