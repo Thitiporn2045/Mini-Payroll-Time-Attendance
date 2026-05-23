@@ -1,0 +1,37 @@
+<section class="table-card table-card-fill">
+
+  <%= form_with url: attendances_path,
+    method: :get,
+    class: "filter-toolbar",
+    data: { controller: "filter-form", turbo_frame: "attendance_workspace_results" } do %>
+    <div class="filter-grid">
+      <div class="filter-field">
+        <span class="mr-1 text-slate-300">⌕</span>
+        <%= text_field_tag :employee_query,
+          employee_query,
+          placeholder: "ค้นหาชื่อพนักงาน...",
+          autocomplete: "off",
+          class: "filter-input",
+          data: { action: "input->filter-form#submitDebounced" } %>
+      </div>
+
+      <div class="filter-field">
+        <%= select_tag :status,
+          options_for_select([["ทุกสถานะ", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]], status_filter),
+          class: "filter-select",
+          data: { action: "change->filter-form#submitNow" } %>
+        <span class="dropdown-filter-icon">▼</span>
+      </div>
+
+      <%= link_to "ล้างค่า",
+        attendances_path,
+        data: { turbo_frame: "_top" },
+        class: "filter-clear" %>
+    </div>
+  <% end %>
+
+  <%= render "attendances/workspace_results",
+    attendances: attendances,
+    employee_query: employee_query,
+    status_filter: status_filter %>
+</section>

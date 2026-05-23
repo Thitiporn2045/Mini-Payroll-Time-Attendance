@@ -16,10 +16,7 @@
         <div class="filter-field">
             <span class="filter-prefix">สถานะ</span>
             <%= select_tag :status,
-            options_for_select(
-                [["ทั้งหมด", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]],
-                local_assigns[:status_filter]
-            ),
+            options_for_select([["ทั้งหมด", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]], local_assigns[:status_filter]),
             class: "filter-select",
             data: { action: "change->filter-form#submitNow" } %>
             <span class="dropdown-filter-icon">▼</span>
@@ -79,14 +76,9 @@
 
                 <td class="table-cell-sticky-right">
                     <%= link_to "แก้ไขเวลาเข้าออกงาน",
-                        edit_employee_attendance_path(
-                            employee,
-                            attendance,
-                            month: local_assigns[:selected_month_value],
-                            status: local_assigns[:status_filter]
-                        ),
-                        data: { turbo_frame: "attendance_form_panel" },
-                        class: "btn-secondary px-3 py-2 text-xs" %>
+                    edit_employee_attendance_path(employee, attendance, month: local_assigns[:selected_month_value], status: local_assigns[:status_filter]),
+                    data: { turbo_frame: "attendance_form_panel" },
+                    class: "btn-secondary px-3 py-2 text-xs" %>
                 </td>
                 </tr>
             <% end %>

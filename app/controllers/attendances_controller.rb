@@ -1,47 +1,65 @@
 class AttendancesController < ApplicationController
-  before_action :set_employee, only: [ :new, :create, :edit, :update ]
+  before_action :set_employee, only: [ :edit, :update ]
   before_action :set_attendance, only: [ :edit, :update ]
+  before_action :load_workspace_data, only: [ :index ]
 
   def index
-    @selected_month = resolve_selected_month
-    @selected_month_value = @selected_month.strftime("%Y-%m")
-    @status_filter = params[:status].to_s
-    @employee_filter = params[:employee_id].to_s
-
-    @employees = Employee.order(:name)
-
-    scope = Attendance.includes(employee: :position)
-      .where(work_date: @selected_month.all_month)
-      .order(work_date: :desc, id: :desc)
-
-    if @status_filter.present? && Attendance.statuses.key?(@status_filter)
-      scope = scope.public_send("status_#{@status_filter}")
-    end
-
-    if @employee_filter.present?
-      scope = scope.where(employee_id: @employee_filter)
-    end
-
-    @attendances = scope
+    render partial: "attendances/workspace_results", locals: {
+      attendances: @attendance_records,
+      employee_query: @employee_query,
+      status_filter: @status_filter
+    } if turbo_frame_request? && request.headers["Turbo-Frame"] == "attendance_workspace_results"
   end
 
   def new
-    @attendance = @employee.attendances.new(
-      work_date: selected_month_for_default,
-      status: :present
-    )
+    if workspace_context?
+      load_workspace_data
+      @attendance = Attendance.new(
+        work_date: Date.current,
+        status: :present
+      )
+    else
+      set_employee
+      @attendance = @employee.attendances.new(
+        work_date: Date.current,
+        status: :present
+      )
+    end
   end
 
   def create
-    @attendance = @employee.attendances.new(filtered_attendance_params)
+    if workspace_context?
+      load_workspace_data
+      @employee = Employee.find_by(id: attendance_params[:employee_id])
+
+      if @employee.blank?
+        @attendance = Attendance.new(filtered_attendance_params)
+        @attendance.errors.add(:employee_id, "กรุณาเลือกพนักงาน")
+        render :new, status: :unprocessable_entity
+        return
+      end
+
+      @attendance = @employee.attendances.new(filtered_attendance_params)
+    else
+      set_employee
+      @attendance = @employee.attendances.new(filtered_attendance_params)
+    end
 
     if @attendance.save
-      prepare_employee_show_data
+      if workspace_context?
+        saved_work_date = @attendance.work_date
+        load_workspace_data
+        @attendance = Attendance.new(
+          work_date: saved_work_date,
+          status: :present
+        )
+      else
+        prepare_employee_show_data
+      end
 
       respond_to do |format|
         format.html do
-          redirect_to employee_path(@employee, month: params[:month], status: params[:status]),
-            notice: "เพิ่มข้อมูลเวลาเข้าออกงานเรียบร้อยแล้ว"
+          redirect_to(workspace_context? ? attendances_path(workspace_redirect_params) : employee_path(@employee, month: params[:month], status: params[:status]), notice: "เพิ่มข้อมูลเวลาเข้าออกงานเรียบร้อยแล้ว")
         end
 
         format.turbo_stream
@@ -52,16 +70,16 @@ class AttendancesController < ApplicationController
   end
 
   def edit
+    load_workspace_data if workspace_context?
   end
 
   def update
     if @attendance.update(filtered_attendance_params)
-      prepare_employee_show_data
+      workspace_context? ? load_workspace_data : prepare_employee_show_data
 
       respond_to do |format|
         format.html do
-          redirect_to employee_path(@employee, month: params[:month], status: params[:status]),
-            notice: "อัปเดตข้อมูลเวลาเข้าออกงานเรียบร้อยแล้ว"
+          redirect_to(workspace_context? ? attendances_path(workspace_redirect_params) : employee_path(@employee, month: params[:month], status: params[:status]), notice: "อัปเดตข้อมูลเวลาเข้าออกงานเรียบร้อยแล้ว")
         end
 
         format.turbo_stream
@@ -81,18 +99,46 @@ class AttendancesController < ApplicationController
     @attendance = @employee.attendances.find(params[:id])
   end
 
-  def filtered_attendance_params
-    attrs = attendance_params.to_h.symbolize_keys
+  def load_workspace_data
+    @employees = Employee.includes(:position).order(:name)
+    @employee_query = params[:employee_query].to_s.strip
+    @status_filter = params[:status].to_s
 
+    scope = Attendance.includes(employee: :position).order(work_date: :desc, created_at: :desc)
+
+    if @employee_query.present?
+      scope = scope.joins(:employee).where("employees.name ILIKE ?", "%#{@employee_query}%")
+    end
+
+    if @status_filter.present? && Attendance.statuses.key?(@status_filter)
+      scope = scope.public_send("status_#{@status_filter}")
+    end
+
+    @attendance_records = scope
+  end
+
+  def workspace_context?
+    params[:return_to] == "workspace" || (params[:controller] == "attendances" && params[:employee_id].blank?)
+  end
+
+  def workspace_redirect_params
+    {
+      employee_query: params[:employee_query].presence,
+      status: params[:status].presence
+    }.compact
+  end
+
+  def filtered_attendance_params
+    attrs = attendance_params.to_h.symbolize_keys.except(:employee_id)
     work_date = attrs[:work_date].presence
+
     attrs[:check_in] = combine_date_and_time(work_date, attrs[:check_in])
     attrs[:check_out] = combine_date_and_time(work_date, attrs[:check_out])
-
     attrs
   end
 
   def attendance_params
-    params.require(:attendance).permit(:work_date, :status, :check_in, :check_out)
+    params.require(:attendance).permit(:employee_id, :work_date, :status, :check_in, :check_out)
   end
 
   def combine_date_and_time(work_date, time_value)
@@ -128,9 +174,5 @@ class AttendancesController < ApplicationController
     Date.strptime("#{month_param}-01", "%Y-%m-%d")
   rescue ArgumentError
     Date.current.beginning_of_month
-  end
-
-  def selected_month_for_default
-    resolve_selected_month
   end
 end

@@ -1,9 +1,14 @@
-gift:
-    name: Gift
-    salary: 50000
+somchai:
+    name: Somchai Jaidee
+    salary: 54000.00
     position: developer
 
-mild:
-    name: Mild
-    salary: 45000
+woranan:
+    name: Woranan Dee
+    salary: 30001.00
     position: designer
+
+nida:
+    name: Nida Ploy
+    salary: 25000.00
+    position: hr

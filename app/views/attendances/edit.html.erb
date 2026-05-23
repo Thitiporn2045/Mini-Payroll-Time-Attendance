@@ -1,6 +1,9 @@
 <%= turbo_frame_tag "attendance_form_panel" do %>
-    <% return_path = employee_path(@employee, month: params[:month], status: params[:status]) %>
-
+    <% return_path = if params[:return_to] == "workspace"
+        attendances_path(employee_query: params[:employee_query], status: params[:status])
+        else
+        employee_path(@employee, month: params[:month], status: params[:status])
+        end %>
     <div
         class="modal-backdrop"
         data-controller="side-panel"
@@ -27,7 +30,10 @@
         <div class="px-6 py-5">
             <%= render "form",
             employee: @employee,
-            attendance: @attendance %>
+            attendance: @attendance,
+            employee_fixed: true,
+            employees: [],
+            return_to: params[:return_to] || "employee" %>
         </div>
         </div>
     </div>

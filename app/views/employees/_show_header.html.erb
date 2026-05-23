@@ -14,8 +14,11 @@
         <div class="dropdown-shell">
             <%= select_tag :employee_selector,
             options_from_collection_for_select(employees_for_select, :id, :name, employee.id),
-            onchange: "const month = this.dataset.monthValue; const url = '/employees/' + this.value + (month ? '?month=' + encodeURIComponent(month) : ''); window.Turbo ? Turbo.visit(url) : window.location.href = url",
-            data: { month_value: local_assigns[:selected_month_value] },
+            onchange: "const month = this.dataset.monthValue; const status = this.dataset.statusValue; const params = new URLSearchParams(); if (month) params.set('month', month); if (status) params.set('status', status); const query = params.toString(); const url = '/employees/' + this.value + (query ? '?' + query : ''); window.Turbo ? Turbo.visit(url) : window.location.href = url",
+            data: {
+              month_value: local_assigns[:selected_month_value],
+              status_value: local_assigns[:attendance_status_filter]
+            },
             class: "dropdown-native" %>
             <span class="dropdown-icon">▼</span>
         </div>

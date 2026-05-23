@@ -9,147 +9,26 @@
         <div class="workspace-content-index">
         <div class="page-header">
             <div>
-            <h1 class="page-title">Attendance</h1>
+            <h1 class="page-title">ข้อมูลเวลาเข้าออกงาน</h1>
             <p class="page-subtitle">
-                ดูภาพรวมเวลาเข้าออกงานของพนักงานทั้งหมด แยกตามเดือน สถานะ และรายชื่อพนักงาน
+                บันทึกเวลาเข้าออกงานของพนักงานทุกคน
             </p>
             </div>
+
+            <%= link_to "เพิ่มเวลาเข้าออกงาน",
+            new_attendance_path(return_to: "workspace", employee_query: @employee_query, status: @status_filter),
+            data: { turbo_frame: "attendance_form_panel" },
+            class: "btn-primary" %>
         </div>
 
-        <section class="table-card table-card-fill">
-            <%= form_with url: attendances_path,
-            method: :get,
-            class: "filter-toolbar",
-            data: { controller: "filter-form" } do %>
-            <div class="filter-grid attendance-filter-grid">
-                <div class="filter-field">
-                <span class="filter-prefix">เดือน</span>
-                <%= month_field_tag :month,
-                    @selected_month_value,
-                    class: "filter-input",
-                    data: { action: "change->filter-form#submitNow" } %>
-                </div>
-
-                <div class="filter-field">
-                <span class="filter-prefix">พนักงาน</span>
-                <%= select_tag :employee_id,
-                    options_from_collection_for_select(@employees, :id, :name, @employee_filter),
-                    include_blank: "ทุกคน",
-                    class: "filter-select",
-                    data: { action: "change->filter-form#submitNow" } %>
-                <span class="dropdown-filter-icon">▼</span>
-                </div>
-
-                <div class="filter-field">
-                <span class="filter-prefix">สถานะ</span>
-                <%= select_tag :status,
-                    options_for_select(
-                    [["ทุกสถานะ", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]],
-                    @status_filter
-                    ),
-                    class: "filter-select",
-                    data: { action: "change->filter-form#submitNow" } %>
-                <span class="dropdown-filter-icon">▼</span>
-                </div>
-
-                <%= link_to "ล้างค่า",
-                attendances_path,
-                data: { turbo_frame: "_top" },
-                class: "filter-clear" %>
-            </div>
-            <% end %>
-
-            <div class="table-scroll">
-            <table class="w-full min-w-[980px] text-left text-sm">
-                <thead class="table-head">
-                <tr>
-                    <th class="table-head-cell">วันที่ทำงาน</th>
-                    <th class="table-head-cell">พนักงาน</th>
-                    <th class="table-head-cell">ตำแหน่ง</th>
-                    <th class="table-head-cell-center">สถานะ</th>
-                    <th class="table-head-cell">เวลาเข้า</th>
-                    <th class="table-head-cell">เวลาออก</th>
-                    <th class="table-head-cell">ชั่วโมงทำงาน</th>
-                    <th class="table-head-cell">OT</th>
-                    <th class="table-head-cell-sticky-right"></th>
-                </tr>
-                </thead>
-
-                <tbody class="table-body-striped">
-                <% if @attendances.any? %>
-                    <% @attendances.each do |attendance| %>
-                    <tr id="<%= dom_id(attendance, :workspace) %>" class="table-row">
-                        <td class="table-cell font-semibold">
-                        <%= attendance.work_date.strftime("%d/%m/%Y") %>
-                        </td>
-
-                        <td class="table-cell">
-                        <div class="font-semibold text-slate-900">
-                            <%= attendance.employee.name %>
-                        </div>
-                        <div class="mt-1 text-xs text-slate-400">
-                            EMP-<%= attendance.employee.id.to_s.rjust(3, "0") %>
-                        </div>
-                        </td>
-
-                        <td class="table-cell">
-                        <span class="chip-blue">
-                            <%= attendance.employee.position.name %>
-                        </span>
-                        </td>
-
-                        <td class="table-cell-center">
-                        <% status_classes = {
-                            "present" => "chip-green",
-                            "leave" => "chip-amber",
-                            "absent" => "chip-red"
-                        } %>
-
-                        <span class="<%= status_classes.fetch(attendance.status, 'chip-neutral') %> table-badge">
-                            <%= attendance.status_label %>
-                        </span>
-                        </td>
-
-                        <td class="table-cell font-mono text-slate-600">
-                        <%= attendance.check_in&.strftime("%H:%M") || "-" %>
-                        </td>
-
-                        <td class="table-cell font-mono text-slate-600">
-                        <%= attendance.check_out&.strftime("%H:%M") || "-" %>
-                        </td>
-
-                        <td class="table-cell font-mono text-slate-600">
-                        <%= attendance.worked_hours %>
-                        </td>
-
-                        <td class="table-cell font-mono font-semibold text-slate-800">
-                        <%= attendance.ot_hours %>
-                        </td>
-
-                        <td class="table-cell-sticky-right">
-                        <%= link_to "ดูพนักงาน",
-                            employee_path(attendance.employee, month: @selected_month_value, status: @status_filter),
-                            data: { turbo_frame: "_top" },
-                            class: "btn-secondary px-3 py-2 text-xs" %>
-                        </td>
-                    </tr>
-                    <% end %>
-                <% else %>
-                    <tr>
-                    <td colspan="9">
-                        <div class="empty-state">
-                        <p class="empty-title">ยังไม่มีข้อมูลเวลาเข้าออกงาน</p>
-                        <p class="empty-description">
-                            ลองเปลี่ยนเดือน สถานะ หรือเพิ่ม attendance จากหน้า detail ของพนักงาน
-                        </p>
-                        </div>
-                    </td>
-                    </tr>
-                <% end %>
-                </tbody>
-            </table>
-            </div>
-        </section>
+        <div id="attendance_workspace_table" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <%= render "workspace_table",
+            attendances: @attendance_records,
+            employee_query: @employee_query,
+            status_filter: @status_filter %>
+        </div>
         </div>
     </div>
+
+    <%= turbo_frame_tag "attendance_form_panel" %>
 </div>

@@ -51,6 +51,8 @@ th:
       blank: "ต้องระบุ"
       required: "ต้องระบุ"
       taken: "มีอยู่แล้ว"
+      restrict_dependent_destroy:
+        has_many: "ไม่สามารถลบข้อมูลได้ เนื่องจากยังมีพนักงานใช้งานตำแหน่งนี้อยู่"
       not_a_number: "ต้องเป็นตัวเลข"
       greater_than: "ต้องมากกว่า %{count}"
       greater_than_or_equal_to: "ต้องมากกว่าหรือเท่ากับ %{count}"

@@ -1,7 +1,11 @@
 developer:
-  name: Developer
-  normalized_name: developer
+    name: Software Developer
+    normalized_name: software developer
 
 designer:
-  name: Designer
-  normalized_name: designer
+    name: Product Designer
+    normalized_name: product designer
+
+hr:
+    name: HR Officer
+    normalized_name: hr officer

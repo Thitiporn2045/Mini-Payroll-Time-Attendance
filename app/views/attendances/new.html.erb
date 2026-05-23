@@ -1,6 +1,9 @@
 <%= turbo_frame_tag "attendance_form_panel" do %>
-    <% return_path = employee_path(@employee, month: params[:month], status: params[:status]) %>
-
+    <% return_path = if params[:return_to] == "workspace"
+        attendances_path(employee_query: params[:employee_query], status: params[:status])
+        else
+        employee_path(@employee, month: params[:month], status: params[:status])
+        end %>
     <div
         class="modal-backdrop"
         data-controller="side-panel"
@@ -12,9 +15,15 @@
             <div class="flex items-start justify-between gap-4">
             <div>
                 <h2 class="modal-title">เพิ่มข้อมูลเวลาเข้าออกงาน</h2>
+                <% if params[:return_to] == "workspace" %>
                 <p class="modal-subtitle">
-                เพิ่มรายการเวลาเข้าออกงานของ <%= @employee.name %>
+                    เพิ่มรายการเวลาเข้าออกงานของพนักงานจากหน้าจัดการกลาง
                 </p>
+                <% else %>
+                <p class="modal-subtitle">
+                    เพิ่มรายการเวลาเข้าออกงานของ <%= @employee.name %>
+                </p>
+                <% end %>
             </div>
 
             <%= link_to "×",
@@ -27,7 +36,10 @@
         <div class="px-6 py-5">
             <%= render "form",
             employee: @employee,
-            attendance: @attendance %>
+            attendance: @attendance,
+            employee_fixed: params[:return_to] != "workspace",
+            employees: (@employees || []),
+            return_to: params[:return_to] %>
         </div>
         </div>
     </div>

@@ -1,0 +1,74 @@
+<%= turbo_frame_tag "attendance_workspace_results", class: "table-scroll" do %>
+  <% if attendances.any? %>
+    <table class="w-full min-w-[1100px] text-left text-sm">
+      <thead class="table-head">
+        <tr>
+          <th class="table-head-cell">พนักงาน</th>
+          <th class="table-head-cell">วันที่ทำงาน</th>
+          <th class="table-head-cell-center">สถานะ</th>
+          <th class="table-head-cell">เวลาเข้า</th>
+          <th class="table-head-cell">เวลาออก</th>
+          <th class="table-head-cell">ชั่วโมงทำงาน</th>
+          <th class="table-head-cell">OT</th>
+          <th class="table-head-cell-sticky-right"></th>
+        </tr>
+      </thead>
+
+      <tbody class="table-body-striped">
+        <% attendances.each do |attendance| %>
+          <% employee = attendance.employee %>
+          <% initials = employee.name.to_s.strip.first.presence || "?" %>
+          <% status_classes = {
+            "present" => "chip-green",
+            "leave" => "chip-amber",
+            "absent" => "chip-red"
+          } %>
+
+          <tr id="<%= dom_id(attendance) %>" class="table-row">
+            <td class="table-cell">
+              <div class="flex items-center gap-4">
+                <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-bold text-white">
+                  <%= initials %>
+                </div>
+
+                <div>
+                  <p class="font-semibold text-slate-900"><%= employee.name %></p>
+                  <p class="mt-1 text-xs text-slate-400">รหัส EMP-<%= employee.id.to_s.rjust(3, "0") %></p>
+                </div>
+              </div>
+            </td>
+
+            <td class="table-cell font-semibold"><%= attendance.work_date.strftime("%d/%m/%Y") %></td>
+            <td class="table-cell-center">
+              <span class="<%= status_classes.fetch(attendance.status, 'chip-neutral') %> table-badge"><%= attendance.status_label %></span>
+            </td>
+            <td class="table-cell font-mono text-slate-600"><%= attendance.check_in&.strftime("%H:%M") || "-" %></td>
+            <td class="table-cell font-mono text-slate-600"><%= attendance.check_out&.strftime("%H:%M") || "-" %></td>
+            <td class="table-cell font-mono text-slate-700"><%= attendance.worked_hours %></td>
+            <td class="table-cell font-mono font-semibold text-amber-700"><%= attendance.ot_hours %></td>
+            <td class="table-cell-sticky-right">
+              <div class="flex justify-end gap-2">
+                <%= link_to "ดูข้อมูล",
+                  employee_path(employee),
+                  data: { turbo_frame: "_top" },
+                  class: "btn-secondary px-3 py-2 text-xs" %>
+
+                <%= link_to "แก้ไขเวลาเข้าออกงาน",
+                  edit_employee_attendance_path(employee, attendance, return_to: "workspace", employee_query: employee_query, status: status_filter),
+                  data: { turbo_frame: "attendance_form_panel" },
+                  class: "btn-secondary px-3 py-2 text-xs" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state-balanced">
+      <p class="empty-title">ยังไม่มีข้อมูลเวลาเข้าออกงาน</p>
+      <p class="empty-description">
+        กด “เพิ่มเวลาเข้าออกงาน” เพื่อเริ่มบันทึกข้อมูลของพนักงาน
+      </p>
+    </div>
+  <% end %>
+<% end %>

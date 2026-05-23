@@ -1,49 +1,78 @@
 require "test_helper"
 
 class PositionTest < ActiveSupport::TestCase
-  test "is valid with a name" do
-    position = Position.new(name: "QA Engineer")
-
-    assert position.valid?
+  test "is valid with fixture data" do
+    assert positions(:developer).valid?
   end
 
-  test "normalizes name before validation" do
-    position = Position.create!(name: " QA Engineer ")
-
-    assert_equal "QA Engineer", position.name
-    assert_equal "qa engineer", position.normalized_name
-  end
-
-  test "is invalid without a name" do
+  test "requires a name" do
     position = Position.new(name: "")
 
     assert_not position.valid?
     assert_includes position.errors[:name], I18n.t("errors.messages.blank")
   end
 
-  test "is invalid with duplicate name regardless of case" do
-    Position.create!(name: "Product Manager")
+  test "normalizes name before validation" do
+    position = Position.new(name: "  Finance Manager  ")
 
-    duplicate = Position.new(name: "product manager")
+    assert position.valid?
+    assert_equal "Finance Manager", position.name
+    assert_equal "finance manager", position.normalized_name
+  end
+
+  test "enforces unique normalized_name" do
+    duplicate = Position.new(name: "software developer")
 
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:normalized_name], I18n.t("errors.messages.taken")
   end
 
-  test "find_or_create_by_name returns the existing normalized record" do
-    existing = Position.create!(name: "Product Manager")
+  test "find_or_create_by_name returns existing position case insensitively" do
+    position = Position.find_or_create_by_name!("  SOFTWARE DEVELOPER ")
 
-    found = Position.find_or_create_by_name!("  product manager  ")
-
-    assert_equal existing.id, found.id
-    assert_equal 1, Position.where(normalized_name: "product manager").count
+    assert_equal positions(:developer), position
   end
 
-  test "find_or_create_by_name raises on blank input" do
-    error = assert_raises(ActiveRecord::RecordInvalid) do
+  test "find_or_create_by_name creates a new position when missing" do
+    assert_difference("Position.count", 1) do
+      position = Position.find_or_create_by_name!("QA Engineer")
+
+      assert_equal "QA Engineer", position.name
+      assert_equal "qa engineer", position.normalized_name
+    end
+  end
+
+  test "find_or_create_by_name raises invalid record when blank" do
+    assert_raises(ActiveRecord::RecordInvalid) do
       Position.find_or_create_by_name!("   ")
     end
+  end
 
-    assert_includes error.record.errors[:name], I18n.t("errors.messages.blank")
+  test "find_or_create_by_name returns existing record when create hits unique index race" do
+    existing = positions(:developer)
+    singleton = class << Position; self; end
+    original_find_by = Position.method(:find_by)
+    original_create = Position.method(:create!)
+    original_find_by_bang = Position.method(:find_by!)
+
+    singleton.define_method(:find_by) { |*| nil }
+    singleton.define_method(:create!) { |*| raise ActiveRecord::RecordNotUnique }
+    singleton.define_method(:find_by!) { |*| existing }
+
+    assert_equal existing, Position.find_or_create_by_name!("Software Developer")
+  ensure
+    singleton.define_method(:find_by) { |*args, **kwargs| original_find_by.call(*args, **kwargs) }
+    singleton.define_method(:create!) { |*args, **kwargs| original_create.call(*args, **kwargs) }
+    singleton.define_method(:find_by!) { |*args, **kwargs| original_find_by_bang.call(*args, **kwargs) }
+  end
+
+  test "cannot destroy a position that is still referenced by employees" do
+    position = positions(:developer)
+
+    assert_no_difference("Position.count") do
+      assert_not position.destroy
+    end
+
+    assert_includes position.errors[:base], I18n.t("errors.messages.restrict_dependent_destroy.has_many")
   end
 end

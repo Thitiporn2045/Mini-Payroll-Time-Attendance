@@ -1,20 +1,48 @@
-gift_present:
-    employee: gift
-    work_date: 2026-05-01
-    status: 0
-    check_in: 2026-05-01 09:00:00
-    check_out: 2026-05-01 18:30:00
+somchai_april_present:
+    employee: somchai
+    work_date: 2026-04-30
+    status: present
+    check_in: 2026-04-30 09:00:00
+    check_out: 2026-04-30 20:00:00
 
-gift_leave:
-    employee: gift
-    work_date: 2026-05-02
-    status: 1
+somchai_may_present_ot:
+    employee: somchai
+    work_date: 2026-05-27
+    status: present
+    check_in: 2026-05-27 09:00:00
+    check_out: 2026-05-27 18:30:00
+
+somchai_may_present_regular:
+    employee: somchai
+    work_date: 2026-05-28
+    status: present
+    check_in: 2026-05-28 09:00:00
+    check_out: 2026-05-28 17:00:00
+
+somchai_may_absent:
+    employee: somchai
+    work_date: 2026-05-29
+    status: absent
     check_in:
     check_out:
 
-mild_absent:
-    employee: mild
-    work_date: 2026-05-01
-    status: 2
+woranan_may_leave:
+    employee: woranan
+    work_date: 2026-05-21
+    status: leave
     check_in:
     check_out:
+
+woranan_may_present_ot:
+    employee: woranan
+    work_date: 2026-05-22
+    status: present
+    check_in: 2026-05-22 09:00:00
+    check_out: 2026-05-22 19:00:00
+
+nida_may_present_short:
+    employee: nida
+    work_date: 2026-05-23
+    status: present
+    check_in: 2026-05-23 12:00:00
+    check_out: 2026-05-23 18:00:00

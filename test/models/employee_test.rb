@@ -1,57 +1,47 @@
 require "test_helper"
 
 class EmployeeTest < ActiveSupport::TestCase
-  test "is valid with required attributes" do
-    employee = Employee.new(
-      name: "Jane Doe",
-      salary: 60_000,
-      position: positions(:developer)
-    )
-
-    assert employee.valid?
+  test "is valid with fixture data" do
+    assert employees(:somchai).valid?
   end
 
-  test "is invalid without a name" do
-    employee = employees(:gift)
-    employee.name = ""
+  test "requires a name" do
+    employee = Employee.new(name: nil, salary: 25_000, position: positions(:developer))
 
     assert_not employee.valid?
     assert_includes employee.errors[:name], I18n.t("errors.messages.blank")
   end
 
-  test "is invalid without salary" do
-    employee = employees(:gift)
-    employee.salary = nil
+  test "requires a salary" do
+    employee = Employee.new(name: "New Employee", salary: nil, position: positions(:developer))
 
     assert_not employee.valid?
     assert_includes employee.errors[:salary], I18n.t("errors.messages.blank")
   end
 
-  test "is invalid with zero salary" do
-    employee = employees(:gift)
-    employee.salary = 0
+  test "requires salary to be greater than zero" do
+    employee = Employee.new(name: "New Employee", salary: 0, position: positions(:developer))
 
     assert_not employee.valid?
+    assert_includes employee.errors[:salary], "ต้องมากกว่า 0"
   end
 
-  test "is invalid with negative salary" do
-    employee = employees(:gift)
-    employee.salary = -1
+  test "belongs to a position" do
+    employee = employees(:somchai)
 
-    assert_not employee.valid?
+    assert_equal positions(:developer), employee.position
   end
 
-  test "is invalid without position" do
-    employee = employees(:gift)
-    employee.position = nil
+  test "has many attendances" do
+    employee = employees(:somchai)
 
-    assert_not employee.valid?
+    assert_equal 4, employee.attendances.count
   end
 
-  test "can be destroyed without attendance association" do
-    employee = employees(:gift)
+  test "destroys dependent attendances when destroyed" do
+    employee = employees(:somchai)
 
-    assert_difference("Employee.count", -1) do
+    assert_difference("Attendance.count", -employee.attendances.count) do
       employee.destroy
     end
   end

@@ -1,13 +1,21 @@
+<% employee_fixed = local_assigns.fetch(:employee_fixed, true) %>
+<% employees = local_assigns.fetch(:employees, []) %>
+<% return_to = local_assigns.fetch(:return_to, "employee") %>
+<% form_model = employee_fixed ? [employee, attendance] : attendance %>
+<% form_url = employee_fixed ? nil : attendances_path %>
 <% default_check_in = attendance.check_in&.strftime("%H:%M") || "09:00" %>
 <% default_check_out = attendance.check_out&.strftime("%H:%M") || "18:00" %>
-<% cancel_path = employee_path(employee, month: params[:month], status: params[:status]) %>
+<% cancel_path = if return_to == "workspace"
+    attendances_path(employee_query: params[:employee_query], status: params[:status])
+    else
+        employee_path(employee, month: params[:month], status: params[:status])
+    end %>
 
-<%= form_with model: [employee, attendance],
-    class: "space-y-5",
-    data: { controller: "attendance-form" } do |form| %>
-    <%= hidden_field_tag :month, params[:month] if params[:month].present? %>
+    <%= form_with model: form_model, url: form_url, class: "space-y-5", data: { controller: "attendance-form" } do |form| %>
+    <%= hidden_field_tag :return_to, return_to %>
+    <%= hidden_field_tag :employee_query, params[:employee_query] if return_to == "workspace" %>
+    <%= hidden_field_tag :month, params[:month] if return_to != "workspace" %>
     <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
-
     <% if attendance.errors.any? %>
         <div class="error-box">
         <p class="error-title">กรุณาตรวจสอบข้อมูลต่อไปนี้</p>
@@ -17,6 +25,22 @@
             <li><%= message %></li>
             <% end %>
         </ul>
+        </div>
+    <% end %>
+
+    <% unless employee_fixed %>
+        <div>
+        <%= form.label :employee_id, "พนักงาน", class: "label-text" %>
+
+        <div class="dropdown-shell">
+            <%= form.collection_select :employee_id,
+            employees,
+            :id,
+            :name,
+            { prompt: "เลือกคน" },
+            { class: "dropdown-native" } %>
+            <span class="dropdown-icon">▼</span>
+        </div>
         </div>
     <% end %>
 
@@ -35,13 +59,7 @@
             class="segmented-option segmented-option-inactive"
             data-attendance-form-target="statusOption"
             data-status-value="present">
-            <%= form.radio_button :status,
-            "present",
-            class: "sr-only",
-            data: {
-                action: "change->attendance-form#statusChanged",
-                attendance_form_target: "statusInput"
-            } %>
+            <%= form.radio_button :status, "present", class: "sr-only", data: { action: "change->attendance-form#statusChanged", attendance_form_target: "statusInput" } %>
             <span>มาทำงาน</span>
         </label>
 
@@ -49,13 +67,7 @@
             class="segmented-option segmented-option-inactive"
             data-attendance-form-target="statusOption"
             data-status-value="leave">
-            <%= form.radio_button :status,
-            "leave",
-            class: "sr-only",
-            data: {
-                action: "change->attendance-form#statusChanged",
-                attendance_form_target: "statusInput"
-            } %>
+            <%= form.radio_button :status, "leave", class: "sr-only", data: { action: "change->attendance-form#statusChanged", attendance_form_target: "statusInput" } %>
             <span>ลา</span>
         </label>
 
@@ -63,21 +75,13 @@
             class="segmented-option segmented-option-inactive"
             data-attendance-form-target="statusOption"
             data-status-value="absent">
-            <%= form.radio_button :status,
-            "absent",
-            class: "sr-only",
-            data: {
-                action: "change->attendance-form#statusChanged",
-                attendance_form_target: "statusInput"
-            } %>
+            <%= form.radio_button :status, "absent", class: "sr-only", data: { action: "change->attendance-form#statusChanged", attendance_form_target: "statusInput" } %>
             <span>ขาด</span>
         </label>
         </div>
     </div>
 
-    <div
-        class="grid grid-cols-1 gap-3 sm:grid-cols-2 <%= attendance.status_present? ? "" : "hidden" %>"
-        data-attendance-form-target="timeFields">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 <%= attendance.status_present? ? '' : 'hidden' %>" data-attendance-form-target="timeFields">
         <div>
         <%= form.label :check_in, "เวลาเข้า", class: "label-text" %>
 
@@ -97,13 +101,18 @@
         </div>
     </div>
 
+    <% if return_to == "workspace" %>
+        <p class="text-sm text-orange-400">
+        หมายเหตุ: สามารถเลือกคนถัดไปเพื่อทำรายการต่อได้เลย
+        </p>
+    <% end %>
+
     <div class="flex justify-end gap-3">
         <%= link_to "ยกเลิก",
         cancel_path,
         data: { turbo_frame: "_top", action: "click->side-panel#linkClose" },
         class: "btn-secondary" %>
 
-        <%= form.submit attendance.persisted? ? "บันทึกการแก้ไข" : "บันทึกข้อมูล",
-        class: "btn-primary" %>
+        <%= form.submit attendance.persisted? ? "บันทึกการแก้ไข" : "บันทึกข้อมูล", class: "btn-primary" %>
     </div>
 <% end %>
