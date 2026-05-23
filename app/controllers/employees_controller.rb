@@ -1,5 +1,6 @@
 class EmployeesController < ApplicationController
-  before_action :load_positions, only: [:new, :create]
+  before_action :set_positions, only: [:new, :create]
+
   def index
     load_index_data
 
@@ -15,17 +16,44 @@ class EmployeesController < ApplicationController
   end
 
   def create
+    position = Position.find_or_create_by_name!(employee_params[:position_name])
+
     @employee = Employee.new(employee_params.except(:position_name))
-    assign_position_from_params
+    @employee.position = position
 
     if @employee.save
-      redirect_to employees_path, notice: "เพิ่มพนักงานเรียบร้อยแล้ว"
+      load_index_data if params[:return_to] == "employees"
+
+      respond_to do |format|
+        format.html do
+          redirect_to employees_path(
+            employee_query: params[:employee_query],
+            position: params[:position]
+          ), notice: "เพิ่มข้อมูลพนักงานเรียบร้อยแล้ว"
+        end
+
+        format.turbo_stream
+      end
     else
       render :new, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordInvalid => error
+    @employee ||= Employee.new(employee_params.except(:position_name))
+    @employee.position_name = employee_params[:position_name]
+    copy_position_errors(error.record)
+
+    render :new, status: :unprocessable_entity
   end
 
   private
+
+  def set_positions
+    @positions = Position.order(:name)
+  end
+
+  def employee_params
+    params.require(:employee).permit(:name, :salary, :position_name)
+  end
 
   def load_index_data
     @employee_query = params[:employee_query].to_s.strip
@@ -39,19 +67,9 @@ class EmployeesController < ApplicationController
     @employees = scope
   end
 
-  def load_positions
-    @positions = Position.order(:name)
-  end
-
-  def assign_position_from_params
-    raw_position_name = employee_params[:position_name].to_s.strip
-
-    if raw_position_name.present?
-      @employee.position = Position.find_or_create_by_name!(raw_position_name)
+  def copy_position_errors(position)
+    position.errors.each do |error|
+      @employee.errors.add(:position_name, error.type, **error.options.except(:value))
     end
-  end
-
-  def employee_params
-    params.require(:employee).permit(:name, :salary, :position_id, :position_name)
   end
 end

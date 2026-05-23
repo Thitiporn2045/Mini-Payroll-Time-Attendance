@@ -1,26 +1,31 @@
-<div class="page-shell">
-    <div id="flash">
-        <%= render "shared/flash" %>
-    </div>
+<%= turbo_frame_tag "employee_form_panel" do %>
+    <% return_path = employees_path(employee_query: params[:employee_query], position: params[:position]) %>
 
-    <div class="workspace-shell">
-        <%= render "shared/workspace_sidebar", active: :employees %>
-
-        <div class="workspace-content-form">
-        <div class="page-header">
+    <div
+        class="modal-backdrop"
+        data-controller="side-panel"
+        data-side-panel-close-url-value="<%= return_path %>"
+        data-action="click->side-panel#backdropClicked">
+        <div class="modal-panel max-w-md" data-side-panel-target="panel">
+        <div class="modal-header">
+            <div class="flex items-start justify-between gap-4">
             <div>
-            <h1 class="page-title">เพิ่มพนักงาน</h1>
-            <p class="page-subtitle">
-                กรอกข้อมูลพนักงาน เลือกตำแหน่งที่มีอยู่ หรือเพิ่มตำแหน่งใหม่ได้ทันที
-            </p>
+                <h2 class="modal-title">เพิ่มพนักงาน</h2>
+                <p class="modal-subtitle">
+                กรอกข้อมูลพนักงานใหม่ และเลือกหรือพิมพ์ตำแหน่งใหม่ได้
+                </p>
             </div>
 
-            <%= link_to "กลับไปหน้าพนักงาน", employees_path, class: "btn-secondary" %>
+            <%= link_to "×",
+                return_path,
+                data: { turbo_frame: "_top", action: "click->side-panel#linkClose" },
+                class: "icon-button" %>
+            </div>
         </div>
 
-        <div class="form-card">
+        <div class="px-6 py-5">
             <%= render "form", employee: @employee, positions: @positions %>
         </div>
         </div>
     </div>
-</div>
+<% end %>

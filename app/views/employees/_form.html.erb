@@ -1,8 +1,18 @@
-<%= form_with model: employee, class: "space-y-6" do |form| %>
+<%= form_with model: employee, class: "space-y-5" do |form| %>
+    <% return_path = employees_path(employee_query: params[:employee_query], position: params[:position]) %>
+
+    <% if params[:return_to].present? %>
+        <%= hidden_field_tag :return_to, params[:return_to] %>
+    <% end %>
+
+    <%= hidden_field_tag :employee_query, params[:employee_query] if params[:employee_query].present? %>
+    <%= hidden_field_tag :position, params[:position] if params[:position].present? %>
+
     <% if employee.errors.any? %>
-        <div class="form-error-box">
-        <p class="font-semibold">ไม่สามารถบันทึกข้อมูลได้</p>
-        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+        <div class="error-box">
+        <p class="error-title">กรุณาตรวจสอบข้อมูลต่อไปนี้</p>
+
+        <ul class="mt-2 list-disc pl-5">
             <% employee.errors.full_messages.each do |message| %>
             <li><%= message %></li>
             <% end %>
@@ -10,49 +20,74 @@
         </div>
     <% end %>
 
-    <div class="form-grid">
-        <div class="form-field">
-        <%= form.label :name, "ชื่อพนักงาน", class: "form-label" %>
+    <div>
+        <%= form.label :name, "ชื่อ-นามสกุล", class: "label-text" %>
+
         <%= form.text_field :name,
-            class: "form-input",
-            placeholder: "เช่น Gift Thitiporn" %>
-        </div>
+        class: "input-field",
+        placeholder: "เช่น สมชาย ใจดี" %>
+    </div>
 
-        <div class="form-field">
-        <%= form.label :salary, "เงินเดือน", class: "form-label" %>
-        <%= form.number_field :salary,
-            class: "form-input",
-            placeholder: "เช่น 50000",
-            step: "0.01",
-            min: "0" %>
-        </div>
+    <div>
+        <%= form.label :position_name, "ตำแหน่ง", class: "label-text" %>
 
-        <div class="form-field">
-        <%= form.label :position_id, "เลือกตำแหน่งที่มีอยู่", class: "form-label" %>
-        <%= form.collection_select :position_id,
-            positions,
-            :id,
-            :name,
-            { prompt: "เลือกตำแหน่ง" },
-            class: "form-input" %>
-        <p class="form-help">
-            ถ้าตำแหน่งยังไม่มี สามารถกรอกช่องด้านล่างแทนได้
-        </p>
-        </div>
-
-        <div class="form-field">
-        <%= form.label :position_name, "เพิ่มตำแหน่งใหม่", class: "form-label" %>
+        <div class="combobox" data-controller="position-combobox">
         <%= form.text_field :position_name,
-            class: "form-input",
-            placeholder: "เช่น QA Engineer" %>
-        <p class="form-help">
-            ถ้ากรอกช่องนี้ ระบบจะใช้ตำแหน่งใหม่นี้แทน dropdown
-        </p>
+            value: employee.position_name.presence || employee.position&.name,
+            class: "input-field pr-12",
+            autocomplete: "off",
+            placeholder: "เลือกหรือพิมพ์ตำแหน่งใหม่ เช่น นักพัฒนา",
+            data: {
+            position_combobox_target: "input",
+            action: "focus->position-combobox#open input->position-combobox#filter keydown->position-combobox#handleKeydown"
+            } %>
+
+        <button
+            type="button"
+            class="absolute inset-y-0 right-0 inline-flex w-12 cursor-pointer items-center justify-center text-slate-500"
+            aria-label="เปิดรายการตำแหน่ง"
+            aria-expanded="false"
+            data-position-combobox-target="button"
+            data-action="click->position-combobox#toggle">
+            ▼
+        </button>
+
+        <div class="combobox-panel" hidden data-position-combobox-target="panel">
+            <% positions.each do |position| %>
+            <button
+                type="button"
+                class="combobox-option"
+                data-position-combobox-target="option"
+                data-position-value="<%= position.name %>"
+                data-action="click->position-combobox#select">
+                <%= position.name %>
+            </button>
+            <% end %>
+
+            <p class="combobox-empty" hidden data-position-combobox-target="empty">
+            คุณสามารถใช้ข้อความที่พิมพ์อยู่เพื่อสร้างตำแหน่งใหม่ได้
+            </p>
+        </div>
         </div>
     </div>
 
-    <div class="form-actions">
-        <%= link_to "ยกเลิก", employees_path, class: "btn-secondary" %>
-        <%= form.submit "บันทึกพนักงาน", class: "btn-primary" %>
+    <div>
+        <%= form.label :salary, "เงินเดือนต่อเดือน", class: "label-text" %>
+
+        <%= form.number_field :salary,
+        min: 1,
+        step: 0.01,
+        class: "input-field",
+        placeholder: "54000" %>
+    </div>
+
+    <div class="flex justify-end gap-3">
+        <%= link_to "ยกเลิก",
+        return_path,
+        data: { turbo_frame: "_top", action: "click->side-panel#linkClose" },
+        class: "btn-secondary" %>
+
+        <%= form.submit employee.persisted? ? "บันทึกการแก้ไข" : "บันทึกข้อมูล",
+        class: "btn-primary" %>
     </div>
 <% end %>

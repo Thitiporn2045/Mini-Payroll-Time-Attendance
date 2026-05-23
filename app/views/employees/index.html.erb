@@ -16,7 +16,8 @@
         </div>
 
         <%= link_to "เพิ่มพนักงาน",
-          new_employee_path,
+          new_employee_path(return_to: "employees", employee_query: @employee_query, position: @position_filter),
+          data: { turbo_frame: "employee_form_panel" },
           class: "btn-primary" %>
       </div>
 
