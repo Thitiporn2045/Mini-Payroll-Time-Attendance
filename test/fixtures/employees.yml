@@ -1,0 +1,9 @@
+gift:
+    name: Gift
+    salary: 50000
+    position: developer
+
+mild:
+    name: Mild
+    salary: 45000
+    position: designer
