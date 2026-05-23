@@ -1,5 +1,7 @@
 developer:
-    name: Developer
+  name: Developer
+  normalized_name: developer
 
 designer:
-    name: Designer
+  name: Designer
+  normalized_name: designer

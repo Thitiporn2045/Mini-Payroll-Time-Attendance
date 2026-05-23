@@ -7,5 +7,5 @@ position_names = [
 ]
 
 position_names.each do |name|
-  Position.find_or_create_by!(name: name)
+  Position.find_or_create_by_name!(name)
 end

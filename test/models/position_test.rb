@@ -7,6 +7,13 @@ class PositionTest < ActiveSupport::TestCase
     assert position.valid?
   end
 
+  test "normalizes name before validation" do
+    position = Position.create!(name: " QA Engineer ")
+
+    assert_equal "QA Engineer", position.name
+    assert_equal "qa engineer", position.normalized_name
+  end
+
   test "is invalid without a name" do
     position = Position.new(name: "")
 
@@ -20,5 +27,14 @@ class PositionTest < ActiveSupport::TestCase
     duplicate = Position.new(name: "product manager")
 
     assert_not duplicate.valid?
+  end
+
+  test "find_or_create_by_name returns the existing normalized record" do
+    existing = Position.create!(name: "Product Manager")
+
+    found = Position.find_or_create_by_name!("  product manager  ")
+
+    assert_equal existing.id, found.id
+    assert_equal 1, Position.where(normalized_name: "product manager").count
   end
 end
