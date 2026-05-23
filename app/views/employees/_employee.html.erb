@@ -29,7 +29,15 @@
     <td class="table-cell-sticky-right">
         <div class="flex justify-end gap-2">
         <span class="btn-secondary px-3 py-2 text-xs opacity-60">ดูข้อมูล</span>
-        <span class="btn-secondary px-3 py-2 text-xs opacity-60">แก้ไขข้อมูล</span>
+        <%= link_to "แก้ไขข้อมูล",
+        edit_employee_path(
+            employee,
+            return_to: "employees",
+            employee_query: local_assigns[:employee_query],
+            position: local_assigns[:position_filter]
+        ),
+        data: { turbo_frame: "employee_form_panel" },
+        class: "btn-secondary px-3 py-2 text-xs" %>
         <span class="btn-danger px-3 py-2 text-xs opacity-60">ลบ</span>
         </div>
     </td>

@@ -1,0 +1,31 @@
+<%= turbo_frame_tag "employee_form_panel" do %>
+    <% return_path = employees_path(employee_query: params[:employee_query], position: params[:position]) %>
+
+    <div
+        class="modal-backdrop"
+        data-controller="side-panel"
+        data-side-panel-close-url-value="<%= return_path %>"
+        data-action="click->side-panel#backdropClicked">
+        <div class="modal-panel max-w-md" data-side-panel-target="panel">
+        <div class="modal-header">
+            <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="modal-title">แก้ไขข้อมูล</h2>
+                <p class="modal-subtitle">
+                แก้ไขชื่อ ตำแหน่ง หรือเงินเดือนของพนักงาน
+                </p>
+            </div>
+
+            <%= link_to "×",
+                return_path,
+                data: { turbo_frame: "_top", action: "click->side-panel#linkClose" },
+                class: "icon-button" %>
+            </div>
+        </div>
+
+        <div class="px-6 py-5">
+            <%= render "form", employee: @employee, positions: @positions %>
+        </div>
+        </div>
+    </div>
+<% end %>

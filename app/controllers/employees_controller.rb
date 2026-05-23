@@ -1,5 +1,6 @@
 class EmployeesController < ApplicationController
-  before_action :set_positions, only: [:new, :create]
+  before_action :set_employee, only: [:edit, :update]
+  before_action :set_positions, only: [:new, :create, :edit, :update]
 
   def index
     load_index_data
@@ -45,7 +46,43 @@ class EmployeesController < ApplicationController
     render :new, status: :unprocessable_entity
   end
 
+  def edit
+  end
+
+  def update
+    position = Position.find_or_create_by_name!(employee_params[:position_name])
+
+    @employee.assign_attributes(employee_params.except(:position_name))
+    @employee.position = position
+
+    if @employee.save
+      load_index_data if params[:return_to] == "employees"
+
+      respond_to do |format|
+        format.html do
+          redirect_to employees_path(
+            employee_query: params[:employee_query],
+            position: params[:position]
+          ), notice: "อัปเดตข้อมูลพนักงานเรียบร้อยแล้ว"
+        end
+
+        format.turbo_stream
+      end
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordInvalid => error
+    @employee.position_name = employee_params[:position_name]
+    copy_position_errors(error.record)
+
+    render :edit, status: :unprocessable_entity
+  end
+
   private
+
+  def set_employee
+    @employee = Employee.find(params[:id])
+  end
 
   def set_positions
     @positions = Position.order(:name)
