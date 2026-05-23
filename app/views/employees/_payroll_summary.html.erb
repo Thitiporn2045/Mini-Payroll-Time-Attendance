@@ -1,0 +1,51 @@
+<section class="detail-summary-row">
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">เงินเดือนพื้นฐาน</p>
+
+        <p class="summary-value">
+        <%= number_to_currency(payroll.base_salary, unit: "฿", precision: 0) %>
+        </p>
+    </div>
+
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">วันทำงาน</p>
+
+        <p class="summary-value">
+        <%= payroll.working_days %>
+        <span class="text-base font-semibold text-slate-400">วัน</span>
+        </p>
+    </div>
+
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">OT รวม</p>
+
+        <p class="summary-value">
+        <%= payroll.total_ot_hours %>
+        <span class="text-base font-semibold text-slate-400">ชม.</span>
+        </p>
+    </div>
+
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">ค่าล่วงเวลา</p>
+
+        <p class="summary-value">
+        <%= number_to_currency(payroll.ot_pay, unit: "฿", precision: 0) %>
+        </p>
+    </div>
+
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">ภาษี</p>
+
+        <p class="summary-value">
+        <%= number_to_currency(payroll.tax, unit: "฿", precision: 0) %>
+        </p>
+    </div>
+
+    <div class="summary-card detail-summary-card">
+        <p class="summary-label">รายได้สุทธิ</p>
+
+        <p class="summary-value-accent">
+        <%= number_to_currency(payroll.net_pay, unit: "฿", precision: 0) %>
+        </p>
+    </div>
+</section>

@@ -1,0 +1,132 @@
+<% base_salary = payroll.base_salary %>
+<% five_percent_taxable = [[base_salary - BigDecimal("30000"), BigDecimal("0")].max, BigDecimal("20000")].min %>
+<% five_percent_tax = five_percent_taxable * BigDecimal("0.05") %>
+<% ten_percent_taxable = [base_salary - BigDecimal("50000"), BigDecimal("0")].max %>
+<% ten_percent_tax = ten_percent_taxable * BigDecimal("0.10") %>
+<% currency_precision = ->(amount) { amount.frac.zero? ? 0 : 2 } %>
+
+<section class="section-card detail-panel-balanced xl:h-full p-5 sm:p-6">
+    <div>
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+        สรุปการคำนวณ
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+        Payroll รายเดือนของ <span class="font-semibold text-slate-800"><%= local_assigns[:selected_month_label] %></span>
+        </p>
+    </div>
+
+    <div class="detail-panel-scroll mt-5 space-y-5 pr-1">
+        <section class="space-y-3">
+        <h3 class="text-sm font-black text-slate-500">การคำนวณ OT</h3>
+
+        <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+            <p class="text-sm text-slate-700">
+                อัตราต่อชั่วโมง (<%= number_to_currency(payroll.base_salary, unit: "฿", precision: 0) %>/30/8)
+            </p>
+            </div>
+
+            <p class="shrink-0 font-mono text-sm font-black text-slate-900">
+            <%= number_to_currency(payroll.hourly_rate, unit: "฿", precision: 0) %>/ชม.
+            </p>
+        </div>
+
+        <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+            <p class="text-sm text-slate-700">
+                OT <%= payroll.total_ot_hours %> ชม. × <%= number_to_currency(payroll.hourly_rate, unit: "฿", precision: 0) %>
+            </p>
+            </div>
+
+            <p class="shrink-0 font-mono text-sm font-black text-green-700">
+            +<%= number_to_currency(payroll.ot_pay, unit: "฿", precision: 0) %>
+            </p>
+        </div>
+        </section>
+
+        <div class="border-t border-slate-200"></div>
+
+        <section class="space-y-3">
+        <div class="flex justify-between">
+            <h3 class="text-sm font-black text-slate-500">ภาษี (ขั้นบันได)</h3>
+
+            <p class="font-mono text-xs leading-6 text-slate-400">
+            <%= number_to_currency(base_salary, unit: "฿", precision: 0) %>
+            </p>
+        </div>
+
+        <div class="space-y-2.5">
+            <div class="flex items-start justify-between gap-4">
+            <p class="text-sm text-slate-700">0 – 30,000 (0%)</p>
+            <p class="shrink-0 font-mono text-sm font-black text-slate-900">฿0</p>
+            </div>
+
+            <% if five_percent_taxable.positive? %>
+            <div class="flex items-start justify-between gap-4">
+                <p class="text-sm text-slate-700">
+                30,001 – <%= number_with_delimiter([base_salary.to_i, 50_000].min) %> × 5%
+                </p>
+                <p class="shrink-0 font-mono text-sm font-black text-slate-900">
+                <%= number_to_currency(five_percent_tax, unit: "฿", precision: currency_precision.call(five_percent_tax)) %>
+                </p>
+            </div>
+            <% end %>
+
+            <% if ten_percent_taxable.positive? %>
+            <div class="flex items-start justify-between gap-4">
+                <p class="text-sm text-slate-700">
+                50,001 – <%= number_with_delimiter(base_salary.to_i) %> × 10%
+                </p>
+                <p class="shrink-0 font-mono text-sm font-black text-slate-900">
+                <%= number_to_currency(ten_percent_tax, unit: "฿", precision: currency_precision.call(ten_percent_tax)) %>
+                </p>
+            </div>
+            <% end %>
+
+            <p class="text-xs leading-5 text-slate-400">
+            ภาษีในงานนี้คิดจากเงินเดือนพื้นฐานรายเดือน
+            </p>
+        </div>
+        </section>
+
+        <div class="border-t border-slate-200"></div>
+
+        <section class="flex items-start justify-between gap-4">
+        <p class="text-base font-black text-slate-950">ภาษีรวม</p>
+        <p class="shrink-0 font-mono text-base font-black text-red-700">
+            -<%= number_to_currency(payroll.tax, unit: "฿", precision: currency_precision.call(payroll.tax)) %>
+        </p>
+        </section>
+
+        <div class="border-t border-slate-200"></div>
+
+        <section class="rounded-[1rem] bg-blue-50 px-4 py-4">
+        <div class="space-y-3">
+            <% if payroll.working_days.zero? %>
+            <p class="rounded-2xl bg-white px-3 py-2 text-sm text-slate-500">
+                ยังไม่มี attendance ในเดือนนี้ จึงคิด OT เป็น 0 ชั่วโมง แต่ยังคำนวณเงินเดือนพื้นฐาน ภาษี และรายได้สุทธิให้ตามปกติ
+            </p>
+            <% end %>
+
+            <div>
+            <h3 class="text-lg font-black text-slate-950">
+                รายได้สุทธิปัจจุบัน
+            </h3>
+            <p class="mt-1 text-sm leading-5 text-slate-400">
+                <span class="text-slate-900"><%= number_to_currency(payroll.base_salary, unit: "", precision: 0) %></span>
+                <span class="text-green-700"> + <%= number_to_currency(payroll.ot_pay, unit: "", precision: 0) %></span>
+                <span class="text-red-700"> - <%= number_to_currency(payroll.tax, unit: "", precision: currency_precision.call(payroll.tax)) %></span>
+            </p>
+            </div>
+
+            <div class="flex items-end justify-between gap-4 border-t border-blue-100 pt-3">
+            <p class="text-sm font-semibold text-slate-500">ยอดรับสุทธิ</p>
+            <p class="shrink-0 font-mono text-3xl font-black tracking-tight text-blue-700">
+                <%= number_to_currency(payroll.net_pay, unit: "฿", precision: 0) %>
+            </p>
+            </div>
+        </div>
+        </section>
+    </div>
+</section>

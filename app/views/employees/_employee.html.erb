@@ -28,7 +28,10 @@
 
     <td class="table-cell-sticky-right">
         <div class="flex justify-end gap-2">
-        <span class="btn-secondary px-3 py-2 text-xs opacity-60">ดูข้อมูล</span>
+        <%= link_to "ดูข้อมูล",
+            employee_path(employee),
+            data: { turbo_frame: "_top" },
+            class: "btn-secondary px-3 py-2 text-xs" %>
         <%= link_to "แก้ไขข้อมูล",
         edit_employee_path(
             employee,

@@ -8,6 +8,18 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     assert_select "h1", "พนักงาน"
   end
 
+  test "shows employee detail page with payroll summary" do
+    employee = employees(:gift)
+
+    get employee_path(employee)
+
+    assert_response :success
+    assert_select "h1.page-title", "รายละเอียดพนักงาน"
+    assert_select "h2", employee.name
+    assert_select "p", "รายได้สุทธิ"
+    assert_select "td", text: I18n.l(attendances(:gift_present).work_date, format: :long)
+  end
+
   test "creates employee with a new position from position_name" do
     assert_difference("Employee.count", 1) do
       assert_difference("Position.count", 1) do
@@ -23,7 +35,7 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
 
     employee = Employee.order(:id).last
 
-    assert_redirected_to employees_path
+    assert_redirected_to employee_path(employee)
     assert_equal "QA Engineer", employee.position.name
     assert_equal "qa engineer", employee.position.normalized_name
   end
@@ -43,7 +55,7 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
 
     employee = Employee.order(:id).last
 
-    assert_redirected_to employees_path
+    assert_redirected_to employee_path(employee)
     assert_equal positions(:developer), employee.position
   end
 

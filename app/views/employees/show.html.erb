@@ -1,0 +1,49 @@
+<div class="page-shell">
+    <div id="flash">
+        <%= render "shared/flash" %>
+    </div>
+
+    <div class="workspace-shell">
+        <%= render "shared/workspace_sidebar", active: nil %>
+
+        <div class="workspace-content">
+        <% initials = @employee.name.to_s.strip.first.presence || "?" %>
+
+        <div id="employee_show_header">
+            <%= render "show_header",
+            employee: @employee,
+            employees_for_select: @employees_for_select,
+            initials: initials,
+            selected_month_value: @selected_month_value,
+            selected_month_label: @selected_month_label,
+            attendance_status_filter: @attendance_status_filter %>
+        </div>
+
+        <section class="detail-panel-grid">
+            <div class="detail-panel-column">
+            <div id="payroll_summary">
+                <%= render "payroll_summary", payroll: @payroll %>
+            </div>
+
+            <%= render "attendance_table_frame",
+                employee: @employee,
+                attendances: @attendances,
+                selected_month_value: @selected_month_value,
+                selected_month_label: @selected_month_label,
+                status_filter: @attendance_status_filter %>
+            </div>
+
+            <aside class="min-w-0 xl:flex xl:h-full xl:min-h-0 xl:items-stretch">
+            <div id="payroll_recipe" class="xl:flex xl:h-full xl:min-h-0 xl:w-full">
+                <%= render "payroll_sidebar",
+                payroll: @payroll,
+                selected_month_label: @selected_month_label %>
+            </div>
+            </aside>
+        </section>
+        </div>
+    </div>
+
+    <%= turbo_frame_tag "employee_form_panel" %>
+    <%= turbo_frame_tag "attendance_form_panel" %>
+</div>

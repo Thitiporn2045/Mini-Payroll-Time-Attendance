@@ -11,12 +11,13 @@ module MiniPayroll
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
     config.i18n.default_locale = :th
-    config.i18n.available_locales = [:th, :en]
+    config.i18n.available_locales = [ :th, :en ]
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+    config.eager_load_paths << Rails.root.join("app/services")
 
     # Configuration for the application, engines, and railties goes here.
     #

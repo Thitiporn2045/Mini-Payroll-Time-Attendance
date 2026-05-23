@@ -1,0 +1,8 @@
+<%= turbo_frame_tag "attendance_table", class: "detail-panel-main" do %>
+    <%= render "employees/attendance_table",
+        employee: employee,
+        attendances: attendances,
+        selected_month_value: selected_month_value,
+        selected_month_label: selected_month_label,
+        status_filter: status_filter %>
+<% end %>

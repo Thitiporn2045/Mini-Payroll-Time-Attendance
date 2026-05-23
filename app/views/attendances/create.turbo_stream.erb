@@ -1,0 +1,25 @@
+<%= turbo_stream.update "attendance_table" do %>
+    <%= render "employees/attendance_table",
+        employee: @employee,
+        attendances: @attendances,
+        selected_month_value: @selected_month_value,
+        selected_month_label: @selected_month_label,
+        status_filter: @attendance_status_filter %>
+    <% end %>
+
+    <%= turbo_stream.update "payroll_summary" do %>
+    <%= render "employees/payroll_summary",
+        payroll: @payroll %>
+    <% end %>
+
+    <%= turbo_stream.update "payroll_recipe" do %>
+    <%= render "employees/payroll_sidebar",
+        payroll: @payroll,
+        selected_month_label: @selected_month_label %>
+    <% end %>
+
+    <%= turbo_stream.update "attendance_form_panel", "" %>
+
+    <%= turbo_stream.update "flash" do %>
+    <%= render "shared/flash", notice: "เพิ่มข้อมูลเวลาเข้าออกงานเรียบร้อยแล้ว" %>
+<% end %>

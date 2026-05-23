@@ -1,0 +1,104 @@
+<section class="table-card detail-panel-balanced xl:h-full">
+    <div class="table-header">
+        <div>
+        <h2 class="section-heading">เวลาเข้าออกงาน</h2>
+        <p class="section-description">
+            รายการเวลาเข้าออกงานของเดือน <%= local_assigns[:selected_month_label] %>
+        </p>
+        </div>
+
+        <%= form_with url: employee_path(employee),
+        method: :get,
+        class: "flex flex-col gap-3 sm:flex-row",
+        data: { controller: "filter-form", turbo_frame: "attendance_table" } do %>
+        <%= hidden_field_tag :month, local_assigns[:selected_month_value] %>
+
+        <div class="filter-field">
+            <span class="filter-prefix">สถานะ</span>
+            <%= select_tag :status,
+            options_for_select(
+                [["ทั้งหมด", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]],
+                local_assigns[:status_filter]
+            ),
+            class: "filter-select",
+            data: { action: "change->filter-form#submitNow" } %>
+            <span class="dropdown-filter-icon">▼</span>
+        </div>
+        <% end %>
+    </div>
+
+    <% if attendances.any? %>
+        <div class="table-scroll">
+        <table class="w-full min-w-[900px] text-left text-sm">
+            <thead class="table-head">
+            <tr>
+                <th class="table-head-cell">วันที่ทำงาน</th>
+                <th class="table-head-cell-center">สถานะ</th>
+                <th class="table-head-cell">เวลาเข้า</th>
+                <th class="table-head-cell">เวลาออก</th>
+                <th class="table-head-cell">ชั่วโมงทำงาน</th>
+                <th class="table-head-cell">OT</th>
+                <th class="table-head-cell-sticky-right"></th>
+            </tr>
+            </thead>
+
+            <tbody class="table-body-striped">
+            <% attendances.each do |attendance| %>
+                <tr id="<%= dom_id(attendance) %>" class="table-row">
+                <td class="table-cell font-semibold">
+                    <%= attendance.work_date.strftime("%d/%m/%Y") %>
+                </td>
+
+                <td class="table-cell-center">
+                    <% status_classes = {
+                    "present" => "chip-green",
+                    "leave" => "chip-amber",
+                    "absent" => "chip-red"
+                    } %>
+
+                    <span class="<%= status_classes.fetch(attendance.status, 'chip-neutral') %> table-badge">
+                    <%= attendance.status_label %>
+                    </span>
+                </td>
+
+                <td class="table-cell font-mono text-slate-600">
+                    <%= attendance.check_in&.strftime("%H:%M") || "-" %>
+                </td>
+
+                <td class="table-cell font-mono text-slate-600">
+                    <%= attendance.check_out&.strftime("%H:%M") || "-" %>
+                </td>
+
+                <td class="table-cell font-mono text-slate-600">
+                    <%= attendance.worked_hours %>
+                </td>
+
+                <td class="table-cell font-mono font-semibold text-slate-800">
+                    <%= attendance.ot_hours %>
+                </td>
+
+                <td class="table-cell-sticky-right">
+                    <%= link_to "แก้ไขเวลาเข้าออกงาน",
+                        edit_employee_attendance_path(
+                            employee,
+                            attendance,
+                            month: local_assigns[:selected_month_value],
+                            status: local_assigns[:status_filter]
+                        ),
+                        data: { turbo_frame: "attendance_form_panel" },
+                        class: "btn-secondary px-3 py-2 text-xs" %>
+                </td>
+                </tr>
+            <% end %>
+            </tbody>
+        </table>
+        </div>
+    <% else %>
+        <div class="empty-state-detail">
+        <p class="empty-title">ยังไม่มีข้อมูลเวลาเข้าออกงาน</p>
+        <p class="empty-description">
+            กด “เพิ่มเวลาเข้าออกงาน” ด้านบนเพื่อเริ่มบันทึกข้อมูลของพนักงานคนนี้
+        </p>
+        </div>
+    <% end %>
+</section>

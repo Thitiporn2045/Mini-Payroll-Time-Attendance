@@ -1,9 +1,32 @@
-<%= turbo_stream.update "employees_list" do %>
-    <%= render "employees/employees_table",
+<% if params[:return_to] == "employee" %>
+    <%= turbo_stream.update "employee_show_header" do %>
+        <%= render "employees/show_header",
+        employee: @employee,
+        employees_for_select: @employees_for_select,
+        initials: @employee.name.to_s.strip.first.presence || "?",
+        selected_month_value: @selected_month_value,
+        selected_month_label: @selected_month_label,
+        attendance_status_filter: @attendance_status_filter %>
+    <% end %>
+
+    <%= turbo_stream.update "payroll_summary" do %>
+        <%= render "employees/payroll_summary",
+        payroll: @payroll %>
+    <% end %>
+
+    <%= turbo_stream.update "payroll_recipe" do %>
+        <%= render "employees/payroll_sidebar",
+        payroll: @payroll,
+        selected_month_label: @selected_month_label %>
+    <% end %>
+    <% else %>
+    <%= turbo_stream.update "employees_list" do %>
+        <%= render "employees/employees_table",
         employees: @employees,
         employee_query: @employee_query,
         position_filter: @position_filter,
         positions: @positions %>
+    <% end %>
     <% end %>
 
     <%= turbo_stream.update "employee_form_panel", "" %>

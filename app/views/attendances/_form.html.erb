@@ -1,0 +1,109 @@
+<% default_check_in = attendance.check_in&.strftime("%H:%M") || "09:00" %>
+<% default_check_out = attendance.check_out&.strftime("%H:%M") || "18:00" %>
+<% cancel_path = employee_path(employee, month: params[:month], status: params[:status]) %>
+
+<%= form_with model: [employee, attendance],
+    class: "space-y-5",
+    data: { controller: "attendance-form" } do |form| %>
+    <%= hidden_field_tag :month, params[:month] if params[:month].present? %>
+    <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
+
+    <% if attendance.errors.any? %>
+        <div class="error-box">
+        <p class="error-title">กรุณาตรวจสอบข้อมูลต่อไปนี้</p>
+
+        <ul class="mt-2 list-disc pl-5">
+            <% attendance.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+            <% end %>
+        </ul>
+        </div>
+    <% end %>
+
+    <div>
+        <%= form.label :work_date, "วันที่", class: "label-text" %>
+
+        <%= form.date_field :work_date,
+        class: "input-field" %>
+    </div>
+
+    <div>
+        <%= form.label :status, "สถานะ", class: "label-text" %>
+
+        <div class="segmented-control">
+        <label
+            class="segmented-option segmented-option-inactive"
+            data-attendance-form-target="statusOption"
+            data-status-value="present">
+            <%= form.radio_button :status,
+            "present",
+            class: "sr-only",
+            data: {
+                action: "change->attendance-form#statusChanged",
+                attendance_form_target: "statusInput"
+            } %>
+            <span>มาทำงาน</span>
+        </label>
+
+        <label
+            class="segmented-option segmented-option-inactive"
+            data-attendance-form-target="statusOption"
+            data-status-value="leave">
+            <%= form.radio_button :status,
+            "leave",
+            class: "sr-only",
+            data: {
+                action: "change->attendance-form#statusChanged",
+                attendance_form_target: "statusInput"
+            } %>
+            <span>ลา</span>
+        </label>
+
+        <label
+            class="segmented-option segmented-option-inactive"
+            data-attendance-form-target="statusOption"
+            data-status-value="absent">
+            <%= form.radio_button :status,
+            "absent",
+            class: "sr-only",
+            data: {
+                action: "change->attendance-form#statusChanged",
+                attendance_form_target: "statusInput"
+            } %>
+            <span>ขาด</span>
+        </label>
+        </div>
+    </div>
+
+    <div
+        class="grid grid-cols-1 gap-3 sm:grid-cols-2 <%= attendance.status_present? ? "" : "hidden" %>"
+        data-attendance-form-target="timeFields">
+        <div>
+        <%= form.label :check_in, "เวลาเข้า", class: "label-text" %>
+
+        <%= form.time_field :check_in,
+            value: default_check_in,
+            class: "input-field",
+            data: { attendance_form_target: "checkIn" } %>
+        </div>
+
+        <div>
+        <%= form.label :check_out, "เวลาออก", class: "label-text" %>
+
+        <%= form.time_field :check_out,
+            value: default_check_out,
+            class: "input-field",
+            data: { attendance_form_target: "checkOut" } %>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-3">
+        <%= link_to "ยกเลิก",
+        cancel_path,
+        data: { turbo_frame: "_top", action: "click->side-panel#linkClose" },
+        class: "btn-secondary" %>
+
+        <%= form.submit attendance.persisted? ? "บันทึกการแก้ไข" : "บันทึกข้อมูล",
+        class: "btn-primary" %>
+    </div>
+<% end %>
