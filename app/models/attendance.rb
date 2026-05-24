@@ -41,7 +41,7 @@ class Attendance < ApplicationRecord
   end
 
   def ot_hours
-    [worked_hours - BigDecimal("8"), BigDecimal("0")].max
+    [ worked_hours - BigDecimal("8"), BigDecimal("0") ].max
   end
 
   private

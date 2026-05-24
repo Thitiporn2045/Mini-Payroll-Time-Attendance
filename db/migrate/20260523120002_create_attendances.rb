@@ -10,7 +10,7 @@ class CreateAttendances < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :attendances, [:employee_id, :work_date], unique: true
+    add_index :attendances, [ :employee_id, :work_date ], unique: true
 
     add_check_constraint :attendances,
       "status IN (0, 1, 2)",
