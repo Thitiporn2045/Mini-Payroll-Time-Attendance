@@ -9,6 +9,16 @@ class AttendancesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#attendance_workspace_table td", /#{Regexp.escape(employees(:somchai).name)}/
   end
 
+  test "shows centered empty state when attendance workspace has no data" do
+    Attendance.delete_all
+
+    get attendances_path
+
+    assert_response :success
+    assert_select "turbo-frame#attendance_workspace_results .empty-state-balanced"
+    assert_select ".empty-state-balanced .empty-title", "ยังไม่มีข้อมูลเวลาเข้าออกงาน"
+  end
+
   test "filters attendance index by employee query and status" do
     get attendances_path, params: { employee_query: "Wor", status: "leave" }
 

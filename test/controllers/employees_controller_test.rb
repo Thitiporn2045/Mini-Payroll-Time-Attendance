@@ -36,6 +36,7 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     assert_select "h1.page-title", "รายละเอียดพนักงาน"
     assert_select "h2", employee.name
     assert_select "p", "รายได้สุทธิ"
+    assert_select ".summary-icon-pink svg rect[x='3.75'][y='6.75'][width='16.5'][height='10.5']"
     assert_select "td", text: I18n.l(attendances(:somchai_may_present_ot).work_date, format: :long)
   end
 
