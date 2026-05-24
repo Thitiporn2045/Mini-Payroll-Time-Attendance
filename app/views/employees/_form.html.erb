@@ -29,35 +29,41 @@
     </div>
 
     <div>
-        <%= form.label :position_name, "ตำแหน่ง", class: "label-text" %>
+    <div class="mb-2 flex flex-wrap items-center gap-2">
+        <%= form.label :position_name, "ตำแหน่ง", class: "label-text mb-0" %>
 
-        <div class="combobox" data-controller="position-combobox">
-            <%= form.text_field :position_name,
-                value: employee.position_name.presence || employee.position&.name,
-                class: "input-field pr-12",
-                autocomplete: "off",
-                placeholder: "เลือกหรือพิมพ์ตำแหน่งใหม่ เช่น นักพัฒนา",
-                data: {
-                position_combobox_target: "input",
-                action: "focus->position-combobox#open input->position-combobox#filter keydown->position-combobox#handleKeydown"
-                } %>
+        <span class="text-xs font-medium text-orange-400">
+        เลือกจากรายการ หรือพิมพ์ชื่อตำแหน่งใหม่ได้เลย
+        </span>
+    </div>
 
-            <button
-                type="button"
-                class="absolute inset-y-0 right-0 inline-flex w-12 cursor-pointer items-center justify-center text-slate-500"
-                aria-label="เปิดรายการตำแหน่ง"
-                aria-expanded="false"
-                data-position-combobox-target="button"
-                data-action="click->position-combobox#toggle">
-                ▼
-            </button>
+    <div class="combobox" data-controller="position-combobox">
+        <%= form.text_field :position_name,
+        value: employee.position_name.presence || employee.position&.name,
+        class: "input-field pr-12",
+        autocomplete: "off",
+        placeholder: "เลือกหรือพิมพ์ตำแหน่งใหม่ เช่น นักพัฒนา",
+        data: {
+            position_combobox_target: "input",
+            action: "focus->position-combobox#open input->position-combobox#filter keydown->position-combobox#handleKeydown"
+        } %>
 
-            <%= render "position_options_frame", positions: positions %>
-        </div>
+        <button
+        type="button"
+        class="absolute inset-y-0 right-0 inline-flex w-12 cursor-pointer items-center justify-center text-slate-500"
+        aria-label="เปิดรายการตำแหน่ง"
+        aria-expanded="false"
+        data-position-combobox-target="button"
+        data-action="click->position-combobox#toggle">
+        ▼
+        </button>
+
+        <%= render "position_options_frame", positions: positions %>
+    </div>
     </div>
 
     <div>
-        <%= form.label :salary, "เงินเดือนต่อเดือน", class: "label-text" %>
+        <%= form.label :salary, "เงินเดือน", class: "label-text" %>
 
         <%= form.number_field :salary,
         min: 1,

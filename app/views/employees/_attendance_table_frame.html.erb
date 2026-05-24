@@ -2,6 +2,7 @@
     <%= render "employees/attendance_table",
         employee: employee,
         attendances: attendances,
+        selected_month_title: local_assigns[:selected_month_title],
         selected_month_value: selected_month_value,
         selected_month_label: selected_month_label,
         status_filter: status_filter %>

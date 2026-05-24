@@ -38,7 +38,6 @@
   - หน้า workspace attendance รวม
 - สามารถกรอง attendance ตามสถานะ
 - สามารถกรอง attendance ตามชื่อพนักงานในหน้า workspace
-- สามารถกรอง attendance ตามเดือนในหน้า employee detail
 
 ### 3. Payroll Calculation
 ในหน้า Employee Show จะแสดงข้อมูล:
@@ -68,6 +67,7 @@ Tax แบบขั้นบันได:
 - test coverage ฝั่ง model, controller, service
 - localized validation messages ภาษาไทย
 - การคง filter context หลัง submit บาง flow เช่น employee detail และ attendance workspace
+- browser month picker บนหน้า employee detail
 
 ## Tech Stack
 
@@ -137,7 +137,7 @@ bin/rails db:drop db:create db:migrate db:seed
 ## วิธีรันโปรเจกต์
 
 ```bash
-bin/rails server
+bin/dev
 ```
 
 จากนั้นเปิด:
@@ -172,7 +172,7 @@ bin/rubocop --no-server
 ## การใช้ AI Tools
 
 AI tools ที่ใช้:
-- OpenAI / Codex-style assistant
+- OpenAI ChatGPT / Codex-style assistant
 
 AI ถูกใช้ช่วยในส่วนต่อไปนี้:
 - ช่วยสร้าง prototype ให้สามารถทดลองกดใช้งานได้ตาม wireframe ที่ออกแบบไว้เอง

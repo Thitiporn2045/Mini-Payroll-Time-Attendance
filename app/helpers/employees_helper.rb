@@ -1,2 +1,21 @@
 module EmployeesHelper
+  THAI_MONTH_NAMES = [
+    nil,
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม"
+  ].freeze
+
+  def thai_month_title(date)
+    "#{THAI_MONTH_NAMES.fetch(date.month)} #{date.year}"
+  end
 end

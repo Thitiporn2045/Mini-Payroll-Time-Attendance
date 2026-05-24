@@ -1,4 +1,6 @@
 class AttendancesController < ApplicationController
+  include EmployeeShowContext
+
   before_action :set_employee, only: [ :edit, :update ]
   before_action :set_attendance, only: [ :edit, :update ]
   before_action :load_workspace_data, only: [ :index ]
@@ -148,31 +150,6 @@ class AttendancesController < ApplicationController
   end
 
   def prepare_employee_show_data
-    selected_month = resolve_selected_month
-    month_range = selected_month.all_month
-    @attendance_status_filter = params[:status].to_s
-
-    monthly_attendances = @employee.attendances
-      .where(work_date: month_range)
-      .order(work_date: :desc)
-
-    @payroll = EmployeePayrollCalculator.new(@employee, attendances: monthly_attendances)
-    @attendances = monthly_attendances
-
-    if @attendance_status_filter.present? && Attendance.statuses.key?(@attendance_status_filter)
-      @attendances = @attendances.public_send("status_#{@attendance_status_filter}")
-    end
-
-    @selected_month_value = selected_month.strftime("%Y-%m")
-    @selected_month_label = selected_month.strftime("%m/%Y")
-  end
-
-  def resolve_selected_month
-    month_param = params[:month].to_s
-    return Date.current.beginning_of_month if month_param.blank?
-
-    Date.strptime("#{month_param}-01", "%Y-%m-%d")
-  rescue ArgumentError
-    Date.current.beginning_of_month
+    prepare_employee_show_context(@employee)
   end
 end

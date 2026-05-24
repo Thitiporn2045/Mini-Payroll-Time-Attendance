@@ -69,6 +69,42 @@ class EmployeesIndexTest < ActionDispatch::IntegrationTest
     assert_select "select[onchange*='status']"
   end
 
+  test "employee detail month filter renders browser month picker" do
+    employee = employees(:somchai)
+
+    get employee_path(employee), params: { month: "2026-05", status: "present" }
+
+    assert_response :success
+    assert_select "#payroll_summary_header", text: /พฤษภาคม 2026/
+    assert_select "#payroll_summary_header input[type='month'][name='month'][value='2026-05']"
+    assert_select "#payroll_summary_header a", text: "← เดือนก่อนหน้า", count: 0
+    assert_select "#payroll_summary_header a", text: "เดือนถัดไป →", count: 0
+  end
+
+  test "employee detail keeps selected month visible even when employee has no attendance that month" do
+    employee = employees(:somchai)
+
+    get employee_path(employee), params: { month: "2026-01" }
+
+    assert_response :success
+    assert_select "#payroll_summary_header", text: /มกราคม 2026/
+    assert_select "#payroll_summary_header input[type='month'][name='month'][value='2026-01']"
+    assert_select ".payroll-summary-subtitle", /มกราคม 2026/
+    assert_select ".section-description", /มกราคม 2026/
+    assert_select ".empty-state-detail .empty-title", "ยังไม่มีข้อมูลเวลาเข้าออกงาน"
+  end
+
+  test "employee detail falls back to current month when month param is invalid" do
+    employee = employees(:somchai)
+    current_month = Date.current.beginning_of_month
+
+    get employee_path(employee), params: { month: "bad-value" }
+
+    assert_response :success
+    assert_select "#payroll_summary_header", text: /#{Regexp.escape(EmployeesHelper::THAI_MONTH_NAMES[current_month.month])} #{current_month.year}/
+    assert_select "#payroll_summary_header input[type='month'][name='month'][value='#{current_month.strftime("%Y-%m")}']"
+  end
+
   test "opens delete confirmation modal from employees list context" do
     employee = employees(:somchai)
 

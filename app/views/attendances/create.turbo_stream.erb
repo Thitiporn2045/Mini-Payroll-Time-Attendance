@@ -14,14 +14,24 @@
         <%= render "employees/attendance_table",
             employee: @employee,
             attendances: @attendances,
+            selected_month_title: @selected_month_title,
             selected_month_value: @selected_month_value,
             selected_month_label: @selected_month_label,
             status_filter: @attendance_status_filter %>
         <% end %>
 
+    <%= turbo_stream.update "payroll_summary_header" do %>
+    <%= render "employees/payroll_summary_header",
+        employee: @employee,
+        selected_month_value: @selected_month_value,
+        selected_month_title: @selected_month_title,
+        attendance_status_filter: @attendance_status_filter %>
+    <% end %>
+
     <%= turbo_stream.update "payroll_summary" do %>
-        <%= render "employees/payroll_summary",
-            payroll: @payroll %>
+    <%= render "employees/payroll_summary",
+        payroll: @payroll,
+        selected_month_title: @selected_month_title %>
     <% end %>
 
     <%= turbo_stream.update "payroll_recipe" do %>

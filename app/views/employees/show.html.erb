@@ -4,7 +4,7 @@
     </div>
 
     <div class="workspace-shell">
-        <%= render "shared/workspace_sidebar", active: nil %>
+        <%= render "shared/workspace_sidebar", active: :employees %>
 
         <div class="workspace-content">
         <% initials = @employee.name.to_s.strip.first.presence || "?" %>
@@ -15,32 +15,44 @@
             employees_for_select: @employees_for_select,
             initials: initials,
             selected_month_value: @selected_month_value,
+            selected_month_title: @selected_month_title,
             selected_month_label: @selected_month_label,
             attendance_status_filter: @attendance_status_filter %>
         </div>
 
-        <section class="detail-panel-grid">
-            <div class="detail-panel-column">
-            <div id="payroll_summary">
-                <%= render "payroll_summary", payroll: @payroll %>
+        <div id="payroll_summary_header" class="mb-6">
+            <%= render "payroll_summary_header",
+                employee: @employee,
+                selected_month_value: @selected_month_value,
+                selected_month_title: @selected_month_title,
+                attendance_status_filter: @attendance_status_filter %>
             </div>
 
-            <%= render "attendance_table_frame",
+            <section class="detail-panel-grid">
+            <div class="detail-panel-column">
+                <div id="payroll_summary">
+                <%= render "payroll_summary",
+                    payroll: @payroll,
+                    selected_month_title: @selected_month_title %>
+                </div>
+
+                <%= render "attendance_table_frame",
                 employee: @employee,
                 attendances: @attendances,
+                selected_month_title: @selected_month_title,
                 selected_month_value: @selected_month_value,
                 selected_month_label: @selected_month_label,
                 status_filter: @attendance_status_filter %>
             </div>
 
             <aside class="min-w-0 xl:flex xl:h-full xl:min-h-0 xl:items-stretch">
-            <div id="payroll_recipe" class="xl:flex xl:h-full xl:min-h-0 xl:w-full">
+                <div id="payroll_recipe" class="xl:flex xl:h-full xl:min-h-0 xl:w-full">
                 <%= render "payroll_sidebar",
-                payroll: @payroll,
-                selected_month_label: @selected_month_label %>
-            </div>
+                    payroll: @payroll,
+                    selected_month_label: @selected_month_label %>
+                </div>
             </aside>
-        </section>
+            </section>
         </div>
     </div>
 

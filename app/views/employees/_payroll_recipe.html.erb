@@ -6,14 +6,25 @@
 <% currency_precision = ->(amount) { amount.frac.zero? ? 0 : 2 } %>
 
 <section class="section-card detail-panel-balanced xl:h-full p-5 sm:p-6">
-    <div>
-        <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-        สรุปการคำนวณ
+    <div class="flex items-start gap-4">
+        <div class="recipe-icon-shell">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="h-7 w-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
+            <rect x="6.75" y="3.75" width="10.5" height="16.5" rx="2.25"/>
+            <path d="M9.75 8.25h4.5"/>
+            <path d="M9.75 12h4.5"/>
+            <path d="M9.75 15.75h2.25"/>
+        </svg>
+        </div>
+
+        <div>
+        <p class="text-sm font-bold uppercase  text-slate-400">
+            สูตรการคำนวณ
         </p>
 
         <p class="mt-2 text-sm text-slate-500">
-        Payroll รายเดือนของ <span class="font-semibold text-slate-800"><%= local_assigns[:selected_month_label] %></span>
+            Payroll รายเดือนของ <span class="font-semibold text-slate-800"><%= local_assigns[:selected_month_label] %></span>
         </p>
+        </div>
     </div>
 
     <div class="detail-panel-scroll mt-5 space-y-5 pr-1">
@@ -109,7 +120,6 @@
             </p>
             <% end %>
 
-            <div>
             <h3 class="text-lg font-black text-slate-950">
                 รายได้สุทธิปัจจุบัน
             </h3>
@@ -118,14 +128,13 @@
                 <span class="text-green-700"> + <%= number_to_currency(payroll.ot_pay, unit: "", precision: 0) %></span>
                 <span class="text-red-700"> - <%= number_to_currency(payroll.tax, unit: "", precision: currency_precision.call(payroll.tax)) %></span>
             </p>
-            </div>
+        </div>
 
-            <div class="flex items-end justify-between gap-4 border-t border-blue-100 pt-3">
+        <div class="flex items-end justify-between gap-4 border-t border-blue-100 pt-3">
             <p class="text-sm font-semibold text-slate-500">ยอดรับสุทธิ</p>
             <p class="shrink-0 font-mono text-3xl font-black tracking-tight text-blue-700">
                 <%= number_to_currency(payroll.net_pay, unit: "฿", precision: 0) %>
             </p>
-            </div>
         </div>
         </section>
     </div>

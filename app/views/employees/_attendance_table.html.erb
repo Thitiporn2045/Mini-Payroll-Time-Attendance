@@ -1,12 +1,13 @@
 <section class="table-card detail-panel-balanced xl:h-full">
     <div class="table-header">
-        <div>
+    <div>
         <h2 class="section-heading">เวลาเข้าออกงาน</h2>
         <p class="section-description">
-            รายการเวลาเข้าออกงานของเดือน <%= local_assigns[:selected_month_label] %>
+        รายการเวลาเข้าออกงานของเดือน <%= local_assigns[:selected_month_title] || local_assigns[:selected_month_label] %>
         </p>
-        </div>
+    </div>
 
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
         <%= form_with url: employee_path(employee),
         method: :get,
         class: "flex flex-col gap-3 sm:flex-row",
@@ -16,12 +17,25 @@
         <div class="filter-field">
             <span class="filter-prefix">สถานะ</span>
             <%= select_tag :status,
-            options_for_select([["ทั้งหมด", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]], local_assigns[:status_filter]),
+            options_for_select(
+                [["ทั้งหมด", ""], ["มาทำงาน", "present"], ["ลา", "leave"], ["ขาด", "absent"]],
+                local_assigns[:status_filter]
+            ),
             class: "filter-select",
             data: { action: "change->filter-form#submitNow" } %>
             <span class="dropdown-filter-icon">▼</span>
         </div>
         <% end %>
+
+        <%= link_to "เพิ่มเวลาเข้าออกงาน",
+        new_employee_attendance_path(
+            employee,
+            month: local_assigns[:selected_month_value],
+            status: local_assigns[:status_filter]
+        ),
+        data: { turbo_frame: "attendance_form_panel" },
+        class: "btn-secondary whitespace-nowrap" %>
+    </div>
     </div>
 
     <% if attendances.any? %>

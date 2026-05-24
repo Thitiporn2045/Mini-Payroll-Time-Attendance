@@ -37,6 +37,49 @@ class EmployeePayrollCalculatorTest < ActiveSupport::TestCase
     assert_equal BigDecimal("44250.0"), payroll.net_pay
   end
 
+  test "calculates tax at the lower boundary above 30000" do
+    employee = employees(:woranan)
+    employee.update!(salary: BigDecimal("30001"))
+
+    payroll = EmployeePayrollCalculator.new(employee, attendances: Attendance.none)
+
+    assert_equal BigDecimal("0.05"), payroll.tax
+    assert_equal BigDecimal("30000.95"), payroll.net_pay
+  end
+
+  test "calculates tax at the top of the five percent bracket" do
+    employee = employees(:woranan)
+    employee.update!(salary: BigDecimal("50000"))
+
+    payroll = EmployeePayrollCalculator.new(employee, attendances: Attendance.none)
+
+    assert_equal BigDecimal("1000.0"), payroll.tax
+    assert_equal BigDecimal("49000.0"), payroll.net_pay
+  end
+
+  test "calculates tax just above the ten percent threshold" do
+    employee = employees(:woranan)
+    employee.update!(salary: BigDecimal("50001"))
+
+    payroll = EmployeePayrollCalculator.new(employee, attendances: Attendance.none)
+
+    assert_equal BigDecimal("1000.10"), payroll.tax
+    assert_equal BigDecimal("49000.90"), payroll.net_pay
+  end
+
+  test "calculates tax from base salary only and does not include ot in taxable income" do
+    employee = employees(:somchai)
+    employee.update!(salary: BigDecimal("54000"))
+
+    attendances = Attendance.where(id: attendances(:somchai_may_present_ot).id)
+    payroll = EmployeePayrollCalculator.new(employee, attendances: attendances)
+
+    assert_equal BigDecimal("1.5"), payroll.total_ot_hours
+    assert_equal BigDecimal("337.50"), payroll.ot_pay
+    assert_equal BigDecimal("1400.0"), payroll.tax
+    assert_equal BigDecimal("52937.50"), payroll.net_pay
+  end
+
   test "aggregates overtime from multiple present attendances and ignores non present records" do
     employee = employees(:somchai)
     employee.update!(salary: BigDecimal("60000"))

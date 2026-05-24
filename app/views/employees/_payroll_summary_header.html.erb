@@ -1,0 +1,43 @@
+<section class="payroll-summary-section">
+    <div class="payroll-summary-header">
+        <div>
+        <h2 class="payroll-summary-title">สรุปเงินเดือน</h2>
+
+        <p class="payroll-summary-subtitle">
+            สรุปเงินเดือนและภาษีสำหรับเดือน
+            <span class="text-pink-600">
+            <%= local_assigns[:selected_month_title] %>
+            </span>
+        </p>
+        </div>
+
+        <% if local_assigns[:employee].present? %>
+        <div class="payroll-month-filter"
+            data-controller="month-picker"
+            data-action="click->month-picker#openPicker">
+            <span class="month-filter-label">เดือนที่ใช้คำนวณ</span>
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+                <%= form_with url: employee_path(employee),
+                    method: :get,
+                    class: "w-full sm:w-auto",
+                    data: { controller: "filter-form" } do %>
+                    <%= hidden_field_tag :status, local_assigns[:attendance_status_filter] if local_assigns[:attendance_status_filter].present? %>
+
+                    <label class="block">
+                    <span class="sr-only">เลือกเดือน</span>
+                    <%= month_field_tag :month,
+                        local_assigns[:selected_month_value],
+                        class: "input-field w-full whitespace-nowrap sm:min-w-[22.4rem]",
+                        data: {
+                            action: "change->filter-form#submitNow",
+                            month_picker_target: "input"
+                        } %>
+                    </label>
+                <% end %>
+            </div>
+        </div>
+        <% end %>
+    </div>
+</section>
